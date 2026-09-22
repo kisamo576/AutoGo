@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>AutoGO — Карточка автомобиля</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .car-detail-card {
+            background: #1E293B;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .gallery-img {
+            width: 100%;
+            height: 380px;
+            object-fit: cover;
+            background: #0F172A;
+            margin-top: 90px;
+        }
+        .gallery-thumb {
+            width: 70px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.2s;
+            border: 2px solid transparent;
+        }
+        .gallery-thumb:hover, .gallery-thumb.active {
+            opacity: 1;
+            border-color: #8B5CF6;
+        }
+        .car-price-big {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #10B981;
+        }
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.6rem;
+            margin: 1rem 0;
+        }
+        .spec-item {
+            background: #0F172A;
+            border-radius: 12px;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .spec-item i {
+            font-size: 1.2rem;
+            color: #A855F7;
+        }
+        .spec-item .fw-bold {
+            font-size: 0.9rem;
+        }
+        .spec-item small {
+            font-size: 0.7rem;
+        }
+        .vin-check {
+            background: #0F172A;
+            border-radius: 16px;
+            padding: 0.7rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1E293B;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #CBD5E1;
+            transition: 0.2s;
+        }
+        .back-link:hover {
+            background: #334155;
+            color: white;
+        }
+        .options-list {
+            list-style: none;
+            padding-left: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin: 0.8rem 0;
+        }
+        .options-list li {
+            background: #0F172A;
+            padding: 3px 10px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            color: #94A3B8;
+        }
+        .btn-report {
+            background: transparent;
+            border: 1px solid #EF4444;
+            color: #EF4444;
+            transition: 0.2s;
+        }
+        .btn-report:hover {
+            background: #EF4444;
+            color: white;
+        }
+        @media (max-width: 992px) {
+            .gallery-img { height: 280px; }
+            .car-price-big { font-size: 1.6rem; }
+        }
+        @media (max-width: 768px) {
+            .spec-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="bi bi-car-front"></i> AutoGO</a>
+            <a href="javascript:history.back()" class="back-link"><i class="bi bi-arrow-left"></i> Назад</a>
+        </div>
+    </nav>
+</header>
+
+<main class="container my-4">
+    <div id="carContent">
+        <div class="text-center py-5">
+            <div class="spinner-border text-purple" role="status"></div>
+            <p class="mt-2">Загрузка информации об автомобиле...</p>
+        </div>
+    </div>
+</main>
+
+<!-- Модальное окно "Написать сообщение продавцу" -->
+<div class="modal fade" id="messageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title"><i class="bi bi-chat-dots"></i> Написать продавцу</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Автомобиль: <strong id="modalCarName"></strong></p>
+                <label class="form-label">Ваше сообщение</label>
+                <textarea id="messageText" class="form-control" rows="4" placeholder="Здравствуйте! Меня заинтересовал ваш автомобиль. Свяжитесь со мной..."></textarea>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-purple" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-purple" id="sendMessageBtn">Отправить сообщение</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="border-top mt-5 py-4 text-center text-secondary small">© 2025 AutoGO</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="cars.js"></script>
+<script>
+    function getRandomPhone() {
+        const numbers = ['29', '33', '44', '25'];
+        const operator = numbers[Math.floor(Math.random() * numbers.length)];
+        const num = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
+        return `+375 ${operator} ${num.slice(0,3)} ${num.slice(3,5)} ${num.slice(5,7)}`;
+    }
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const carId = parseInt(urlParams.get('id'));
+    const car = carsDatabase.find(c => c.id === carId);
+    const container = document.getElementById('carContent');
+
+    if (!car) {
+        container.innerHTML = `<div class="alert alert-danger text-center py-5">Автомобиль не найден</div>`;
+    } else {
+        const phone = getRandomPhone();
+        const mainPhoto = car.photo;
+        const galleryPhotos = [mainPhoto, mainPhoto, mainPhoto, mainPhoto];
+        const onerror = `this.onerror=null; this.src='https://picsum.photos/id/${car.id}/800/400'`;
+        
+        container.innerHTML = `
+            <div class="car-detail-card">
+                <div class="row g-0">
+                    <!-- ЛЕВАЯ КОЛОНКА: ФОТО -->
+                    <div class="col-lg-6">
+                        <img id="mainGalleryImg" src="${mainPhoto}" class="gallery-img w-100" alt="${car.brand} ${car.model}" onerror="${onerror}">
+                        <div class="d-flex gap-2 p-2 overflow-auto justify-content-center">
+                            ${galleryPhotos.map((photo, idx) => `
+                                <img src="${photo}" class="gallery-thumb" data-img="${photo}" alt="Фото ${idx+1}" onerror="this.style.display='none'">
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- ПРАВАЯ КОЛОНКА: НАЗВАНИЕ, ЦЕНА, ПАРАМЕТРЫ -->
+                    <div class="col-lg-6">
+                        <div class="p-3 p-lg-4">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap mb-3">
+                                <h1 class="fw-bold fs-2 mb-0">${car.brand} ${car.model}</h1>
+                                <div class="car-price-big">$${car.price.toLocaleString()}</div>
+                            </div>
+                            <div class="spec-grid">
+                                <div class="spec-item"><i class="bi bi-calendar3"></i><div class="fw-bold">${car.year}</div><small>Год</small></div>
+                                <div class="spec-item"><i class="bi bi-fuel-pump"></i><div class="fw-bold">${car.engine} л</div><small>Двигатель</small></div>
+                                <div class="spec-item"><i class="bi bi-speedometer2"></i><div class="fw-bold">${car.mileage} км</div><small>Пробег</small></div>
+                                <div class="spec-item"><i class="bi bi-car-front"></i><div class="fw-bold">${car.bodyType || '—'}</div><small>Кузов</small></div>
+                                <div class="spec-item"><i class="bi bi-gear"></i><div class="fw-bold">${car.transmission || '—'}</div><small>КПП</small></div>
+                                <div class="spec-item"><i class="bi bi-grid"></i><div class="fw-bold">${car.drive || '—'}</div><small>Привод</small></div>
+                                <div class="spec-item"><i class="bi bi-palette"></i><div class="fw-bold">${car.color || '—'}</div><small>Цвет</small></div>
+                                <div class="spec-item"><i class="bi bi-check-circle"></i><div class="fw-bold">${car.condition || 'С пробегом'}</div><small>Состояние</small></div>
+                            </div>
+                            <div class="vin-check">
+                                <div><i class="bi bi-shield-check text-success"></i> <span class="fw-bold small">VIN: ${car.vin || 'WBA' + car.id + 'X123'}</span></div>
+                                <button class="btn btn-outline-warning btn-sm" onclick="alert('🔍 Отчёт по VIN: автомобиль не был в ДТП, 2 владельца, пробег оригинальный.')">
+                                    <i class="bi bi-search"></i> Проверить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-0 border-top border-secondary">
+                    <div class="col-lg-8">
+                        <div class="p-3 p-lg-4">
+                            <h5 class="fw-bold"><i class="bi bi-file-text"></i> Описание от продавца</h5>
+                            <p class="text-secondary mb-0 small">${car.description}</p>
+                            ${car.options && car.options.length ? `
+                                <h6 class="fw-bold mt-3 mb-1"><i class="bi bi-star"></i> Комплектация</h6>
+                                <ul class="options-list">
+                                    ${car.options.map(opt => `<li><i class="bi bi-check-lg"></i> ${opt}</li>`).join('')}
+                                </ul>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="col-lg-4 border-start border-secondary">
+                        <div class="p-3 p-lg-4 h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <h5 class="fw-bold"><i class="bi bi-telephone"></i> Контакты продавца</h5>
+                                <div class="mt-2">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <i class="bi bi-telephone-fill text-success"></i>
+                                        <span class="fw-bold">${phone}</span>
+                                    </div>
+                                    <button class="btn btn-purple w-100 mt-2" onclick="openMessageModal(${car.id}, '${car.brand} ${car.model}')">
+                                        <i class="bi bi-chat-dots"></i> Написать сообщение
+                                    </button>
+                                    <small class="text-secondary d-block mt-2">Номер сгенерирован для демонстрации</small>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <a href="catalog.html" class="btn btn-outline-purple btn-sm flex-grow-1">← Назад</a>
+                                    <button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="alert('✅ Добавлено в избранное')">
+                                        <i class="bi bi-heart"></i> В избранное
+                                    </button>
+                                    <button class="btn btn-report btn-sm flex-grow-1" onclick="alert('Жалоба отправлена модератору. Мы рассмотрим её в течение 24 часов.')">
+                                        <i class="bi bi-exclamation-triangle"></i> Пожаловаться
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const thumbs = document.querySelectorAll('.gallery-thumb');
+        const mainImg = document.getElementById('mainGalleryImg');
+        thumbs.forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                const newSrc = thumb.getAttribute('data-img');
+                if (newSrc) mainImg.src = newSrc;
+                thumbs.forEach(t => t.classList.remove('active'));
+                thumb.classList.add('active');
+            });
+            if (thumb.getAttribute('data-img') === mainPhoto) thumb.classList.add('active');
+        });
+    }
+    
+    function openMessageModal(carId, carName) {
+        window.currentCarIdForMessage = carId;
+        document.getElementById('modalCarName').innerText = carName;
+        document.getElementById('messageText').value = '';
+        new bootstrap.Modal(document.getElementById('messageModal')).show();
+    }
+    window.openMessageModal = openMessageModal;
+    
+    document.getElementById('sendMessageBtn').addEventListener('click', () => {
+        const message = document.getElementById('messageText').value.trim();
+        if (!message) {
+            alert('Напишите сообщение перед отправкой');
+            return;
+        }
+        const car = carsDatabase.find(c => c.id === window.currentCarIdForMessage);
+        alert(`✅ Сообщение отправлено продавцу автомобиля ${car.brand} ${car.model}!\n\n📝 Ваше сообщение: "${message}"\n\n(Демо-режим, реальный чат в разработке)`);
+        bootstrap.Modal.getInstance(document.getElementById('messageModal')).hide();
+    });
+</script>
+</body>
+</html>

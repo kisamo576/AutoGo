@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoGO — продажа авто</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .btn-danger-custom {
+            background: #DC2626;
+            box-shadow: 0 2px 8px rgba(220,38,38,0.4);
+            color: white;
+        }
+        .btn-danger-custom:hover {
+            background: #B91C1C;
+            transform: translateY(-1px);
+        }
+        .btn-show-all {
+            background: #8B5CF6;
+            color: white;
+            padding: 0.6rem 2rem;
+            font-size: 1rem;
+            border-radius: 40px;
+        }
+        .btn-show-all:hover {
+            background: #A855F7;
+            transform: translateY(-2px);
+        }
+        .premium-carousel .carousel-control-prev {
+            left: -40px;
+        }
+        .premium-carousel .carousel-control-next {
+            right: -40px;
+        }
+        @media (max-width: 768px) {
+            .premium-carousel .carousel-control-prev { left: -20px; }
+            .premium-carousel .carousel-control-next { right: -20px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-car-front"></i> AutoGO
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Помощь</a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="#" onclick="alert('Часто задаваемые вопросы'); return false;">📖 Часто задаваемые вопросы</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="alert('Написать в поддержку'); return false;">✉️ Написать в поддержку</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="alert('Правила площадки'); return false;">📜 Правила площадки</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="alert('Пожаловаться на объявление'); return false;">⚠️ Пожаловаться</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><span class="nav-divider mx-2"></span></li>
+                    <li class="nav-item"><button class="nav-link btn btn-link" data-bs-toggle="modal" data-bs-target="#registerModal" style="border:none; background:transparent;">Регистрация</button></li>
+                    <li class="nav-item"><span class="nav-divider mx-1"></span></li>
+                    <li class="nav-item"><button class="nav-link btn btn-link" data-bs-toggle="modal" data-bs-target="#loginModal" style="border:none; background:transparent;">Войти</button></li>
+                    <li class="nav-item"><span class="nav-divider mx-2"></span></li>
+                    <li class="nav-item"><button class="btn btn-danger-custom btn-sm" onclick="window.location.href='add_ad.html'">Подать объявление</button></li>
+                    <li class="nav-item"><span class="nav-divider mx-2"></span></li>
+                    <li class="nav-item"><button class="btn btn-warning btn-sm text-dark fw-bold" onclick="window.location.href='premium.html'">⭐ Купить премиум</button></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container my-4">
+    <div class="filters-card">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <h5 class="mb-3 fw-bold">🔍 Поиск авто с пробегом</h5>
+            <a href="#" class="text-secondary small" data-bs-toggle="modal" data-bs-target="#allParamsModal">Все параметры →</a>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-3">
+                <label class="filter-label">Марка</label>
+                <select id="brandSelect" class="form-select"><option value="">Любая</option></select>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="filter-label">Модель</label>
+                <select id="modelSelect" class="form-select" disabled><option value="">Сначала выберите марку</option></select>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="filter-label">Год от</label>
+                <select id="yearFrom" class="form-select"><option value="">Не выбран</option></select>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="filter-label">Год до</label>
+                <select id="yearTo" class="form-select"><option value="">Не выбран</option></select>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="filter-label">Цена от ($)</label>
+                <input type="number" id="priceFrom" class="form-control" min="0" step="500" placeholder="0">
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="filter-label">Цена до ($)</label>
+                <input type="number" id="priceTo" class="form-control" min="0" step="500" placeholder="150000">
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="filter-label">Объём от (л)</label>
+                <input type="number" id="volFrom" class="form-control" min="0" step="0.1" placeholder="0">
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="filter-label">Объём до (л)</label>
+                <input type="number" id="volTo" class="form-control" min="0" step="0.1" placeholder="6.0">
+            </div>
+        </div>
+        <div class="d-flex flex-wrap gap-3 mt-4">
+            <button class="btn btn-purple" id="searchBtn">Показать объявления</button>
+            <button class="btn btn-outline-purple" id="resetBtn">Сбросить</button>
+        </div>
+    </div>
+
+    <div class="premium-block premium-carousel">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <h2 class="premium-title">⭐ Премиум объявления</h2>
+            <a href="catalog.html" class="btn btn-warning btn-sm fw-bold">Показать больше →</a>
+        </div>
+        <div id="premiumCarousel" class="carousel slide mt-3" data-bs-ride="carousel" data-bs-interval="4000">
+            <div class="carousel-inner" id="premiumCarouselInner"></div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#premiumCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" style="background-size:50%"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#premiumCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon bg-dark rounded-circle p-2" style="background-size:50%"></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="latest-wrapper">
+        <h2 class="section-title">🔄 Последние добавленные</h2>
+        <div class="row g-4" id="latestAds"></div>
+        <div class="text-center mt-4">
+            <a href="catalog.html" class="btn btn-show-all px-4">Показать все →</a>
+        </div>
+    </div>
+
+    <div class="modal fade" id="allParamsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">🔧 Все параметры поиска</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6"><label class="form-label">Марка</label><select id="advBrandSelect" class="form-select"><option value="">Любая</option></select></div>
+                        <div class="col-md-6"><label class="form-label">Модель</label><select id="advModelSelect" class="form-select" disabled><option value="">Сначала выберите марку</option></select></div>
+                        <div class="col-md-6"><label class="form-label">Год от</label><select id="advYearFrom" class="form-select"></select></div>
+                        <div class="col-md-6"><label class="form-label">Год до</label><select id="advYearTo" class="form-select"></select></div>
+                        <div class="col-md-6"><label class="form-label">Цена от ($)</label><input type="number" id="advPriceFrom" class="form-control" min="0" step="500" placeholder="0"></div>
+                        <div class="col-md-6"><label class="form-label">Цена до ($)</label><input type="number" id="advPriceTo" class="form-control" min="0" step="500" placeholder="150000"></div>
+                        <div class="col-md-6"><label class="form-label">Объём от (л)</label><input type="number" id="advVolFrom" class="form-control" min="0" step="0.1" placeholder="0"></div>
+                        <div class="col-md-6"><label class="form-label">Объём до (л)</label><input type="number" id="advVolTo" class="form-control" min="0" step="0.1" placeholder="6.0"></div>
+                        <div class="col-md-6"><label class="form-label">Тип кузова</label><select id="advBodyType" class="form-select"><option value="">Любой</option><option value="Седан">Седан</option><option value="Внедорожник / SUV">Внедорожник / SUV</option><option value="Хэтчбек">Хэтчбек</option><option value="Универсал">Универсал</option><option value="Купе">Купе</option></select></div>
+                        <div class="col-md-6"><label class="form-label">Привод</label><select id="advDrive" class="form-select"><option value="">Любой</option><option value="Передний">Передний</option><option value="Задний">Задний</option><option value="Полный (4WD/AWD)">Полный (4WD/AWD)</option></select></div>
+                        <div class="col-md-6"><label class="form-label">Коробка передач</label><select id="advTransmission" class="form-select"><option value="">Любая</option><option value="Механика">Механика</option><option value="Автомат">Автомат</option><option value="Робот / CVT">Робот / CVT</option></select></div>
+                        <div class="col-md-6"><label class="form-label">Цвет</label><select id="advColor" class="form-select"><option value="">Любой</option><option value="Чёрный">Чёрный</option><option value="Белый">Белый</option><option value="Серебристый">Серебристый</option><option value="Красный">Красный</option><option value="Синий">Синий</option><option value="Серый">Серый</option></select></div>
+                        <div class="col-md-6"><label class="form-label">Состояние</label><select id="advCondition" class="form-select"><option value="">Любое</option><option value="Новый">Новый</option><option value="С пробегом">С пробегом</option></select></div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-purple" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-purple" id="applyAdvancedFilters">Применить фильтры</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary"><h5 class="modal-title">🔐 Вход</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="mb-3"><label class="form-label">Логин</label><input type="text" class="form-control" placeholder="user / admin" required></div>
+                    <div class="mb-3"><label class="form-label">Пароль</label><input type="password" class="form-control" placeholder="123 / admin123" required></div>
+                    <button type="submit" class="btn btn-purple w-100">Войти</button>
+                    <div id="loginError" class="alert alert-danger mt-2" style="display:none;">Неверный логин/пароль</div>
+                    <div class="text-center mt-3"><a href="#" class="text-secondary small" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal">Нет аккаунта? Регистрация</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="registerModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary"><h5 class="modal-title">📝 Регистрация</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" placeholder="example@mail.com" required></div>
+                    <div class="mb-3"><label class="form-label">Пароль</label><input type="password" class="form-control" placeholder="Минимум 3 символа" required></div>
+                    <div class="mb-3"><label class="form-label">Повторите пароль</label><input type="password" class="form-control" required></div>
+                    <button type="submit" class="btn btn-purple w-100">Зарегистрироваться</button>
+                    <div id="registerError" class="alert alert-danger mt-2" style="display:none;"></div>
+                    <div class="text-center mt-3"><a href="#" class="text-secondary small" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">Уже есть аккаунт? Войти</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="border-top mt-5 py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4"><h6 class="fw-bold">AutoGO</h6><p class="text-secondary small">Платформа для продажи авто в Беларуси</p></div>
+            <div class="col-md-4"><h6 class="fw-bold">Помощь</h6><ul class="list-unstyled"><li><a href="#" class="footer-link">ЧЗВ</a></li><li><a href="#" class="footer-link">Контакты</a></li></ul></div>
+            <div class="col-md-4"><h6 class="fw-bold">Навигация</h6><ul class="list-unstyled"><li><a href="catalog.html" class="footer-link">Все объявления</a></li></ul></div>
+        </div>
+        <hr class="border-secondary"><div class="text-center text-secondary small">© 2025 AutoGO</div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="cars.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

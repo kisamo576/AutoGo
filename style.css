@@ -1,0 +1,453 @@
+/* style.css — общие стили для AutoGO */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0B1120;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #E2E8F0;
+    line-height: 1.5;
+}
+
+/* Фоновая картинка */
+body {
+    position: relative;
+}
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ========== ШАПКА ========== */
+.navbar {
+    background: #0F172A !important;
+    border-bottom: 1px solid #1E293B;
+    padding: 0.8rem 0;
+}
+
+.navbar-brand {
+    background: #8B5CF6;
+    border-radius: 40px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 800;
+    color: white !important;
+    transition: 0.2s;
+}
+
+.navbar-brand:hover {
+    background: #A855F7;
+    transform: scale(1.02);
+}
+
+.nav-link {
+    color: #CBD5E1 !important;
+    font-weight: 500;
+    transition: 0.2s;
+    padding: 0.5rem 0.8rem;
+}
+
+.nav-link:hover {
+    color: #A855F7 !important;
+}
+
+.nav-divider {
+    width: 1px;
+    height: 24px;
+    background-color: #334155;
+    margin: 0 8px;
+}
+
+/* ========== ОСНОВНОЙ КОНТЕЙНЕР ========== */
+.container {
+    max-width: 1400px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+@media (min-width: 1600px) {
+    .container {
+        max-width: 1500px;
+    }
+}
+
+/* ========== КАРТОЧКА ФИЛЬТРОВ ========== */
+.filters-card {
+    background: #1E293B;
+    border-radius: 28px;
+    padding: 2rem 2rem;
+    margin-bottom: 2.5rem;
+    border: 1px solid #334155;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.filter-label {
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94A3B8;
+    margin-bottom: 0.5rem;
+}
+
+/* СТИЛИ ДЛЯ ВСЕХ ПОЛЕЙ ВВОДА */
+.form-control, 
+.form-select {
+    background: #0F172A;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+}
+
+/* ТЕКСТ В SELECT (выпадающие списки) — БЕЛЫЙ */
+.form-select {
+    color: #F1F5F9 !important;
+}
+
+/* ТЕКСТ В INPUT (поля ввода) — СВЕТЛО-СЕРЫЙ */
+.form-control {
+    color: #CBD5E1 !important;
+}
+
+/* ПЛЕЙСХОЛДЕРЫ (подсказки внутри полей) */
+.form-control::placeholder {
+    color: #64748B !important;
+}
+
+/* OPTION внутри SELECT */
+.form-select option {
+    color: #F1F5F9 !important;
+    background: #0F172A !important;
+}
+
+.form-control:focus, 
+.form-select:focus {
+    border-color: #A855F7;
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+    background: #0F172A;
+}
+
+.form-select:disabled {
+    background: #0F172A !important;
+    color: #94A3B8 !important;
+    opacity: 1;
+}
+
+/* ========== МОДАЛЬНОЕ ОКНО "ВСЕ ПАРАМЕТРЫ" ========== */
+#allParamsModal .form-control,
+#allParamsModal .form-select {
+    background: #0F172A;
+    border: 1px solid #334155;
+}
+
+#allParamsModal .form-select {
+    color: #F1F5F9 !important;
+}
+
+#allParamsModal .form-control {
+    color: #CBD5E1 !important;
+}
+
+#allParamsModal .form-control::placeholder {
+    color: #64748B !important;
+}
+
+#allParamsModal .form-select option {
+    color: #F1F5F9 !important;
+    background: #0F172A !important;
+}
+
+/* ========== КНОПКИ ========== */
+.btn-purple {
+    background: #8B5CF6;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    padding: 0.7rem 2rem;
+    transition: 0.2s;
+    font-size: 0.95rem;
+}
+
+.btn-purple:hover {
+    background: #A855F7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.btn-outline-purple {
+    border: 1px solid #8B5CF6;
+    border-radius: 50px;
+    padding: 0.7rem 1.8rem;
+    background: transparent;
+    color: #CBD5E1;
+    transition: 0.2s;
+    font-size: 0.95rem;
+}
+
+.btn-outline-purple:hover {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: #A855F7;
+    color: #F1F5F9;
+    transform: translateY(-1px);
+}
+
+/* ========== ПРЕМИУМ БЛОК ========== */
+.premium-block {
+    background: #1E293B;
+    border-radius: 32px;
+    padding: 2rem 1.8rem;
+    margin-bottom: 2.5rem;
+    border: 1px solid #FBBF24;
+    box-shadow: 0 8px 20px rgba(251, 191, 36, 0.1);
+}
+
+.premium-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #FBBF24;
+    margin-bottom: 0.5rem;
+}
+
+/* ========== КАРТОЧКИ АВТОМОБИЛЕЙ ========== */
+.car-card {
+    background: #1E293B;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: 0.25s;
+    height: 100%;
+    border: 1px solid #334155;
+}
+
+.car-card:hover {
+    transform: translateY(-5px);
+    border-color: #A855F7;
+    box-shadow: 0 15px 30px -12px rgba(168, 85, 247, 0.3);
+}
+
+.car-img {
+    height: 180px;
+    background: #0F172A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.car-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.price {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #10B981;
+    margin-bottom: 0.3rem;
+}
+
+.premium-badge {
+    background: #FBBF24;
+    color: #0F172A;
+    font-size: 0.75rem;
+    padding: 3px 12px;
+    border-radius: 40px;
+    font-weight: 800;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+.like-btn {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    color: #64748B;
+    transition: 0.1s;
+    cursor: pointer;
+}
+
+.like-btn:hover {
+    color: #F43F5E;
+}
+
+.like-btn.liked {
+    color: #F43F5E;
+}
+
+/* ========== БЛОК ПОСЛЕДНИХ ДОБАВЛЕННЫХ ========== */
+.latest-wrapper {
+    background: #1E293B;
+    border-radius: 32px;
+    padding: 2rem 1.8rem;
+    border: 1px solid #334155;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-left: 4px solid #A855F7;
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+    color: #F1F5F9;
+}
+
+/* ========== ПОДВАЛ ========== */
+footer {
+    background: #0F172A;
+    border-top: 1px solid #1E293B;
+    color: #94A3B8;
+    padding: 2.5rem 0;
+    margin-top: 2.5rem;
+}
+
+.footer-link {
+    color: #94A3B8;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.footer-link:hover {
+    color: #A855F7;
+}
+
+/* ========== МОДАЛЬНЫЕ ОКНА ========== */
+.modal-content {
+    background: #1E293B !important;
+    color: #F1F5F9 !important;
+    border: 1px solid #334155;
+    border-radius: 28px;
+}
+
+.modal-header {
+    border-bottom-color: #334155;
+    padding: 1.2rem 1.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top-color: #334155;
+}
+
+.btn-close-white {
+    filter: invert(1);
+}
+
+/* ========== КАТАЛОГ (ad-row) ========== */
+.ad-row {
+    background: #1E293B;
+    border-radius: 24px;
+    margin-bottom: 1.5rem;
+    padding: 1.2rem;
+    border: 1px solid #334155;
+    transition: 0.2s;
+}
+
+.ad-row:hover {
+    border-color: #A855F7;
+    transform: translateY(-2px);
+}
+
+.ad-img {
+    height: 150px;
+    object-fit: cover;
+    border-radius: 20px;
+    width: 100%;
+}
+
+.price-lg {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #10B981;
+}
+
+/* ========== ПАГИНАЦИЯ ========== */
+.pagination .page-link {
+    background: #1E293B;
+    border-color: #334155;
+    color: #CBD5E1;
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+}
+
+.pagination .active .page-link {
+    background: #8B5CF6;
+    border-color: #8B5CF6;
+    color: white;
+}
+
+.pagination .page-link:hover {
+    background: #334155;
+    color: #F1F5F9;
+}
+
+/* ========== ОТСТУПЫ ========== */
+.row.g-4 {
+    --bs-gutter-y: 1.5rem;
+    --bs-gutter-x: 1.5rem;
+}
+
+/* ========== КАРУСЕЛЬ: СТРЕЛКИ ========== */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 40px;
+    height: 40px;
+    background-size: 50%;
+}
+
+/* ========== АДАПТИВ ========== */
+@media (max-width: 768px) {
+    .car-img {
+        height: 140px;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+    }
+    
+    .premium-title {
+        font-size: 1.3rem;
+    }
+    
+    .filters-card {
+        padding: 1.2rem;
+    }
+    
+    .premium-block,
+    .latest-wrapper {
+        padding: 1.2rem;
+    }
+    
+    .btn-purple,
+    .btn-outline-purple {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .price {
+        font-size: 1.3rem;
+    }
+    
+    .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}

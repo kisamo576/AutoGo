@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>AutoGO — Премиум доступ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .premium-page-card {
+            background: #1E293B;
+            border-radius: 28px;
+            border: 1px solid #334155;
+            overflow: hidden;
+        }
+        .price-card {
+            background: linear-gradient(135deg, #1E293B, #0F172A);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid #334155;
+            transition: 0.2s;
+        }
+        .price-card.premium {
+            border: 2px solid #FBBF24;
+            background: linear-gradient(135deg, #2D2A1E, #1E293B);
+        }
+        .price-card .price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #FBBF24;
+        }
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feature-list li i.bi-check-lg {
+            color: #10B981;
+        }
+        .feature-list li i.bi-x-lg {
+            color: #EF4444;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1E293B;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #CBD5E1;
+            transition: 0.2s;
+        }
+        .back-link:hover {
+            background: #334155;
+            color: white;
+        }
+        @media (max-width: 768px) {
+            .price-card .price { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="bi bi-car-front"></i> AutoGO</a>
+            <a href="javascript:history.back()" class="back-link"><i class="bi bi-arrow-left"></i> Назад</a>
+        </div>
+    </nav>
+</header>
+
+<main class="container my-4">
+    <div class="premium-page-card">
+        <div class="p-4 p-lg-5">
+            <div class="text-center mb-4">
+                <h1 class="fw-bold">⭐ Премиум доступ</h1>
+                <p class="text-secondary">Продавайте автомобили быстрее с расширенными возможностями</p>
+            </div>
+            
+            <div class="row g-4 mt-2">
+                <!-- СТАНДАРТ (бесплатно) -->
+                <div class="col-md-6">
+                    <div class="price-card">
+                        <h3 class="fw-bold mb-2">Стандарт</h3>
+                        <div class="price">0 $</div>
+                        <p class="text-secondary small">навсегда</p>
+                        <hr class="border-secondary">
+                        <ul class="feature-list">
+                            <li><i class="bi bi-check-lg"></i> 1 объявление бесплатно</li>
+                            <li><i class="bi bi-check-lg"></i> Фото до 5 штук</li>
+                            <li><i class="bi bi-check-lg"></i> Стандартное отображение</li>
+                            <li><i class="bi bi-check-lg"></i> Ответы на сообщения</li>
+                            <li><i class="bi bi-x-lg" style="color:#EF4444;"></i> Поднятие в поиске</li>
+                            <li><i class="bi bi-x-lg" style="color:#EF4444;"></i> Выделение объявления</li>
+                            <li><i class="bi bi-x-lg" style="color:#EF4444;"></i> Приоритетная поддержка</li>
+                            <li><i class="bi bi-x-lg" style="color:#EF4444;"></i> 24/7 чат с менеджером</li>
+                        </ul>
+                        <button class="btn btn-outline-purple w-100 mt-3" disabled>Текущий план</button>
+                    </div>
+                </div>
+                
+                <!-- ПРЕМИУМ (платный) -->
+                <div class="col-md-6">
+                    <div class="price-card premium">
+                        <div class="badge bg-warning text-dark mb-2">⭐ РЕКОМЕНДУЕМ</div>
+                        <h3 class="fw-bold mb-2">Премиум</h3>
+                        <div class="price">49 $</div>
+                        <p class="text-secondary small">в месяц / без автопродления</p>
+                        <hr class="border-secondary">
+                        <ul class="feature-list">
+                            <li><i class="bi bi-check-lg"></i> До 10 объявлений одновременно</li>
+                            <li><i class="bi bi-check-lg"></i> Фото до 20 штук + видео</li>
+                            <li><i class="bi bi-check-lg"></i> Выделение объявления цветом</li>
+                            <li><i class="bi bi-check-lg"></i> Поднятие в поиске каждые 3 дня</li>
+                            <li><i class="bi bi-check-lg"></i> Значок «⭐ Премиум продавец»</li>
+                            <li><i class="bi bi-check-lg"></i> Приоритетная поддержка 24/7</li>
+                            <li><i class="bi bi-check-lg"></i> Статистика просмотров</li>
+                            <li><i class="bi bi-check-lg"></i> Возврат до 50% при быстрой продаже</li>
+                        </ul>
+                        <button class="btn btn-warning w-100 mt-3 fw-bold" id="buyPremiumBtn">
+                            Купить премиум
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Дополнительная информация -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="bg-dark rounded-4 p-3 text-center">
+                        <p class="text-secondary small mb-0">
+                            <i class="bi bi-shield-check text-success"></i> 
+                            Безопасная оплата картой или через систему расчёта. 
+                            Договор оферты доступен по запросу.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Модальное окно для успешной оплаты (красивое) -->
+<div class="modal fade" id="premiumSuccessModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-success">
+            <div class="modal-header border-success">
+                <h5 class="modal-title"><i class="bi bi-stars text-warning"></i> Премиум активирован</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="bi bi-trophy-fill text-warning" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">Спасибо за покупку!</h4>
+                <p class="text-secondary">Ваш аккаунт переведён на премиум-тариф на 30 дней.<br>
+                Все возможности уже доступны. Удачных продаж!</p>
+                <div class="alert alert-success mt-3" role="alert">
+                    <i class="bi bi-check-circle-fill"></i> Чек отправлен на вашу почту
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <a href="profile.html" class="btn btn-purple">Перейти в личный кабинет</a>
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="border-top mt-5 py-4 text-center text-secondary small">© 2025 AutoGO</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Кнопка "Купить премиум" открывает красивое модальное окно
+    document.getElementById('buyPremiumBtn').addEventListener('click', function() {
+        const modal = new bootstrap.Modal(document.getElementById('premiumSuccessModal'));
+        modal.show();
+    });
+</script>
+</body>
+</html>

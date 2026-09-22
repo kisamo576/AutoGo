@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>AutoGO — Каталог объявлений</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .car-card-horizontal {
+            background: #1E293B;
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: 0.2s;
+            border: 1px solid #334155;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .car-card-horizontal:hover {
+            transform: translateY(-3px);
+            border-color: #A855F7;
+            box-shadow: 0 15px 30px -10px rgba(168,85,247,0.3);
+        }
+        .car-card-horizontal .car-img {
+            height: 100%;
+            min-height: 180px;
+            background: #0F172A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .car-card-horizontal .car-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .car-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 0.75rem 0;
+        }
+        .car-detail-item {
+            background: #0F172A;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            color: #94A3B8;
+        }
+        .car-price-large {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #10B981;
+        }
+        .car-description {
+            color: #94A3B8;
+            font-size: 0.9rem;
+            margin: 0.75rem 0;
+            line-height: 1.5;
+        }
+        .contact-badge {
+            background: #0F172A;
+            border-radius: 40px;
+            padding: 8px 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .contact-badge i {
+            color: #10B981;
+        }
+        .premium-seller-badge {
+            background: #FBBF24;
+            color: #1F2937;
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+        .filter-badge {
+            background: #1E293B;
+            border: 1px solid #334155;
+            border-radius: 40px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-badge .remove-filter {
+            cursor: pointer;
+            color: #94A3B8;
+            transition: 0.2s;
+        }
+        .filter-badge .remove-filter:hover {
+            color: #F43F5E;
+        }
+        .btn-danger-custom {
+            background: #DC2626;
+            box-shadow: 0 2px 8px rgba(220,38,38,0.4);
+            color: white;
+        }
+        .btn-danger-custom:hover {
+            background: #B91C1C;
+            transform: translateY(-1px);
+        }
+        @media (max-width: 768px) {
+            .car-card-horizontal .car-img { height: 160px; }
+            .car-price-large { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="bi bi-car-front"></i> AutoGO</a>
+            <div class="ms-auto d-flex gap-2">
+                <button class="btn btn-outline-purple btn-sm" onclick="alert('Часто задаваемые вопросы')">Помощь</button>
+                <button class="btn btn-danger-custom btn-sm" onclick="window.location.href='add_ad.html'">Подать объявление</button>
+            </div>
+        </div>
+    </nav>
+</header>
+<main class="container my-4">
+    <h2 class="mb-3">Каталог автомобилей</h2>
+    
+    <div id="activeFiltersContainer" class="active-filters"></div>
+    <div id="resetFilterBtn" style="display: none;" class="mb-3">
+        <button class="btn btn-outline-purple btn-sm" onclick="resetFiltersAndReload()">Сбросить все фильтры</button>
+    </div>
+    <div id="resultsCount" class="mb-3 text-secondary"></div>
+    <div id="adsContainer"></div>
+    <nav id="paginationNav" class="mt-4"></nav>
+</main>
+
+<footer class="border-top mt-5 py-4 text-center text-secondary small">© 2025 AutoGO</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="cars.js"></script>
+<script>
+    // ---------- ПОЛУЧЕНИЕ ПАРАМЕТРОВ ИЗ URL (ОДИНОЧНЫЕ ЗНАЧЕНИЯ) ----------
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    const filters = {
+        brand: urlParams.get('brand') || '',
+        model: urlParams.get('model') || '',
+        yearFrom: urlParams.get('yearFrom') || '',
+        yearTo: urlParams.get('yearTo') || '',
+        priceFrom: urlParams.get('priceFrom') ? parseInt(urlParams.get('priceFrom')) : 0,
+        priceTo: urlParams.get('priceTo') ? parseInt(urlParams.get('priceTo')) : Infinity,
+        volFrom: urlParams.get('volFrom') ? parseFloat(urlParams.get('volFrom')) : 0,
+        volTo: urlParams.get('volTo') ? parseFloat(urlParams.get('volTo')) : Infinity
+    };
+    
+    // ---------- ФИЛЬТРАЦИЯ МАШИН ----------
+    function getFilteredCars() {
+        return carsDatabase.filter(car => {
+            if (filters.brand && car.brand !== filters.brand) return false;
+            if (filters.model && car.model !== filters.model) return false;
+            if (filters.yearFrom && car.year < parseInt(filters.yearFrom)) return false;
+            if (filters.yearTo && car.year > parseInt(filters.yearTo)) return false;
+            if (car.price < filters.priceFrom || car.price > filters.priceTo) return false;
+            if (parseFloat(car.engine) < filters.volFrom || parseFloat(car.engine) > filters.volTo) return false;
+            return true;
+        });
+    }
+    
+    // ---------- ОТОБРАЖЕНИЕ АКТИВНЫХ ФИЛЬТРОВ ----------
+    function displayActiveFilters() {
+        const container = document.getElementById('activeFiltersContainer');
+        const resetBtn = document.getElementById('resetFilterBtn');
+        if (!container) return;
+        container.innerHTML = '';
+        
+        const activeFiltersList = [];
+        if (filters.brand) activeFiltersList.push({ label: `Марка: ${filters.brand}`, key: 'brand' });
+        if (filters.model) activeFiltersList.push({ label: `Модель: ${filters.model}`, key: 'model' });
+        if (filters.yearFrom) activeFiltersList.push({ label: `Год от: ${filters.yearFrom}`, key: 'yearFrom' });
+        if (filters.yearTo) activeFiltersList.push({ label: `Год до: ${filters.yearTo}`, key: 'yearTo' });
+        if (filters.priceFrom) activeFiltersList.push({ label: `Цена от: $${filters.priceFrom}`, key: 'priceFrom' });
+        if (filters.priceTo !== Infinity) activeFiltersList.push({ label: `Цена до: $${filters.priceTo}`, key: 'priceTo' });
+        if (filters.volFrom) activeFiltersList.push({ label: `Объём от: ${filters.volFrom} л`, key: 'volFrom' });
+        if (filters.volTo !== Infinity) activeFiltersList.push({ label: `Объём до: ${filters.volTo} л`, key: 'volTo' });
+        
+        if (activeFiltersList.length === 0) {
+            container.style.display = 'none';
+            if (resetBtn) resetBtn.style.display = 'none';
+            return;
+        }
+        
+        container.style.display = 'flex';
+        if (resetBtn) resetBtn.style.display = 'block';
+        
+        activeFiltersList.forEach(filter => {
+            const badge = document.createElement('div');
+            badge.className = 'filter-badge';
+            badge.innerHTML = `${filter.label} <span class="remove-filter" data-key="${filter.key}">✕</span>`;
+            badge.querySelector('.remove-filter').addEventListener('click', () => {
+                const newParams = new URLSearchParams(window.location.search);
+                newParams.delete(filter.key);
+                window.location.search = newParams.toString();
+            });
+            container.appendChild(badge);
+        });
+    }
+    
+    function resetFiltersAndReload() {
+        window.location.href = 'catalog.html';
+    }
+    window.resetFiltersAndReload = resetFiltersAndReload;
+    
+    // ---------- ГЕНЕРАЦИЯ СЛУЧАЙНОГО НОМЕРА ТЕЛЕФОНА ----------
+    function getRandomPhone() {
+        const numbers = ['29', '33', '44', '25'];
+        const operator = numbers[Math.floor(Math.random() * numbers.length)];
+        const num = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
+        return `+375 ${operator} ${num.slice(0,3)} ${num.slice(3,5)} ${num.slice(5,7)}`;
+    }
+    
+    // ---------- РЕНДЕР КАРТОЧКИ ----------
+    function renderCarCard(car) {
+        const onerror = `this.style.display='none'`;
+        const phone = getRandomPhone();
+        const isPremium = car.isPremium === true;
+        const premiumClass = isPremium ? 'premium-seller' : '';
+        const premiumBadge = isPremium ? '<span class="premium-seller-badge">⭐ Премиум продавец</span>' : '';
+        
+        return `
+            <div class="car-card-horizontal row g-0 ${premiumClass}">
+                <div class="col-md-4 col-lg-3">
+                    <div class="car-img">
+                        <img src="${car.photo}" alt="${car.brand} ${car.model}" onerror="${onerror}">
+                    </div>
+                </div>
+                <div class="col-md-8 col-lg-9">
+                    <div class="p-3 p-lg-4">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start">
+                            <div>
+                                <h3 class="fw-bold mb-2" style="color:#F1F5F9;">${car.brand} ${car.model}</h3>
+                                ${premiumBadge}
+                            </div>
+                            <div class="car-price-large">$${car.price.toLocaleString()}</div>
+                        </div>
+                        
+                        <div class="car-details">
+                            <span class="car-detail-item"><i class="bi bi-calendar3"></i> ${car.year} г.</span>
+                            <span class="car-detail-item"><i class="bi bi-fuel-pump"></i> ${car.engine} л</span>
+                            <span class="car-detail-item"><i class="bi bi-speedometer2"></i> ${car.mileage} км</span>
+                        </div>
+                        
+                        <div class="car-description">
+                            ${car.description}
+                        </div>
+                        
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-2">
+                            <div class="contact-badge">
+                                <i class="bi bi-telephone-fill"></i>
+                                <span>${phone}</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-purple btn-sm" onclick="alert('Связь с продавцом: ${phone}')">
+                                    <i class="bi bi-telephone"></i> Позвонить
+                                </button>
+                                <a href="ad.html?id=${car.id}" class="btn btn-purple btn-sm">
+                                    <i class="bi bi-eye"></i> Подробнее
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // ---------- ПАГИНАЦИЯ ----------
+    let currentPage = 1;
+    const perPage = 10;
+    
+    function renderAds() {
+        const filteredCars = getFilteredCars();
+        const totalResults = filteredCars.length;
+        const resultsCountEl = document.getElementById('resultsCount');
+        if (resultsCountEl) resultsCountEl.innerHTML = `Найдено ${totalResults} объявлений`;
+        
+        const start = (currentPage - 1) * perPage;
+        const end = start + perPage;
+        const pageCars = filteredCars.slice(start, end);
+        const container = document.getElementById('adsContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        
+        if (pageCars.length === 0) {
+            container.innerHTML = '<div class="alert alert-warning">По вашему запросу ничего не найдено.</div>';
+            const paginationNav = document.getElementById('paginationNav');
+            if (paginationNav) paginationNav.innerHTML = '';
+            return;
+        }
+        
+        pageCars.forEach(car => {
+            container.innerHTML += renderCarCard(car);
+        });
+        renderPagination(totalResults);
+    }
+    
+    function renderPagination(totalResults) {
+        const totalPages = Math.ceil(totalResults / perPage);
+        const nav = document.getElementById('paginationNav');
+        if (!nav) return;
+        nav.innerHTML = '';
+        if (totalPages <= 1) return;
+        
+        const ul = document.createElement('ul');
+        ul.className = 'pagination justify-content-center flex-wrap gap-1';
+        
+        const prevLi = document.createElement('li');
+        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        const prevLink = document.createElement('a');
+        prevLink.href = '#';
+        prevLink.className = 'page-link';
+        prevLink.innerHTML = '&laquo; Назад';
+        prevLink.onclick = (e) => {
+            e.preventDefault();
+            if (currentPage > 1) { currentPage--; renderAds(); window.scrollTo(0, 0); }
+        };
+        prevLi.appendChild(prevLink);
+        ul.appendChild(prevLi);
+        
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, startPage + 4);
+        if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+        
+        if (startPage > 1) {
+            const firstLi = document.createElement('li');
+            firstLi.className = 'page-item';
+            const firstLink = document.createElement('a');
+            firstLink.href = '#';
+            firstLink.className = 'page-link';
+            firstLink.innerText = '1';
+            firstLink.onclick = (e) => { e.preventDefault(); currentPage = 1; renderAds(); window.scrollTo(0, 0); };
+            firstLi.appendChild(firstLink);
+            ul.appendChild(firstLi);
+            if (startPage > 2) {
+                const dots = document.createElement('li');
+                dots.className = 'page-item disabled';
+                dots.innerHTML = '<span class="page-link">...</span>';
+                ul.appendChild(dots);
+            }
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            const li = document.createElement('li');
+            li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+            const a = document.createElement('a');
+            a.href = '#';
+            a.className = 'page-link';
+            a.innerText = i;
+            a.onclick = (e) => {
+                e.preventDefault();
+                currentPage = i;
+                renderAds();
+                window.scrollTo(0, 0);
+            };
+            li.appendChild(a);
+            ul.appendChild(li);
+        }
+        
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const dots = document.createElement('li');
+                dots.className = 'page-item disabled';
+                dots.innerHTML = '<span class="page-link">...</span>';
+                ul.appendChild(dots);
+            }
+            const lastLi = document.createElement('li');
+            lastLi.className = 'page-item';
+            const lastLink = document.createElement('a');
+            lastLink.href = '#';
+            lastLink.className = 'page-link';
+            lastLink.innerText = totalPages;
+            lastLink.onclick = (e) => { e.preventDefault(); currentPage = totalPages; renderAds(); window.scrollTo(0, 0); };
+            lastLi.appendChild(lastLink);
+            ul.appendChild(lastLi);
+        }
+        
+        const nextLi = document.createElement('li');
+        nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+        const nextLink = document.createElement('a');
+        nextLink.href = '#';
+        nextLink.className = 'page-link';
+        nextLink.innerHTML = 'Вперёд &raquo;';
+        nextLink.onclick = (e) => {
+            e.preventDefault();
+            if (currentPage < totalPages) { currentPage++; renderAds(); window.scrollTo(0, 0); }
+        };
+        nextLi.appendChild(nextLink);
+        ul.appendChild(nextLi);
+        
+        nav.appendChild(ul);
+    }
+    
+    displayActiveFilters();
+    renderAds();
+</script>
+</body>
+</html>
