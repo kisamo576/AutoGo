@@ -147,7 +147,7 @@ Kufar.by — крупнейшая онлайн-площадка объявлен
 ![](./file%20(1).webp)
 
 Разметка: корневой div id="__next" подтверждает Next.js. Внутри div id="application", div id="content", div id="main-content", div id="bottom-bar". Link rel="preload" для SVG-иконок (оптимизация LCP). Noscript дважды. Script от Google Publisher Tags (pubads_impl.js) — Google Ad Manager.
-
+![](./file%20(3).webp)
 Итоговый стек: Next.js (React) + SCSS Modules + Turbopack, CDN content.kufar.by, Sentry, Google Ad Manager, веб-сервер OpenResty/Nginx (косвенно).
 
 ## 4. Семантические элементы HTML5
@@ -156,37 +156,49 @@ Kufar.by — крупнейшая онлайн-площадка объявлен
 Присутствуют только section (47) и footer (1). Отсутствуют header, nav, main, article, aside. Вместо main используется div id="main-content", вместо nav — div bottom-bar, верхняя панель — div id="application", карточки — section вместо article.
 
 Семантические классы (замена тегам): styles-module-scss-module__I-Vmyq__content (контейнер контента), styles-module-scss-module__I-Vmyq__content_main (основной контент), styles-module-scss-module__1y4UWm__bottom_bar (нижняя панель), snackBar-container-bottom (уведомления), Popups-styles-module__pP8E7G__overlay (оверлей попапа), Popups-styles-module__pP8E7G__container (контейнер попапа).
+![](./file%20(3).webp)
 
 Вывод: семантика частичная, что снижает Accessibility до 68/100.
 
 ## 5. Адаптивность
 Mobile 375×667: одноколоночная вёрстка, кнопки «По новизне» и «Фильтры» на всю ширину, фиксированная нижняя навигация (Главная, Избранное, Объявления, Сообщения, Профиль), кнопка «Позвонить» крупная на всю ширину карточки.
+![](./file%20(4).webp)
 
 Desktop 1568: многоколоночный список объявлений (фото + описание + метаданные), верхняя панель с логотипом, поиском, «Подать объявление», «Войти», правый блок избранного.
+![](./file%20(5).webp)
 
 Media-запросы: обнаружен breakpoint @media only screen and (max-width: 560px). Используются SCSS-модули с вложенными media-запросами.
+![](./file%20(6).webp)  
 
 Meta viewport: meta name="viewport" content="width=device-width, initial-scale=1" присутствует на auto.kufar.by и content.kufar.by.
+![](./file%20(7).webp)
 
 Вывод: ресурс адаптивен.
 
 ## 6. Lighthouse
 Условия: университет, Гродно, Wi-Fi, MTS, Download 24.96 Мбит/с, Upload 5.63 Мбит/с, Ping 30 ms, Desktop, Chrome DevTools, https://www.kufar.by/l.
+![](./file%20(9).webp)
 
 Результаты: Performance 20/100, Accessibility 68/100, Best Practices 96/100, SEO 85/100.
+![](./file%20(8).webp)
 
 Причины: Performance низкий из-за тяжёлых JS-бандлов Turbopack, рекламы через securepubads.g.doubleclick.net, множества preload-ресурсов, Cache-Control no-cache для JS. Accessibility средний из-за отсутствия семантических тегов и, вероятно, проблем с alt и контрастом. Best Practices высокий благодаря HTTPS, CSP, HSTS. SEO в порядке.
 
 ## 7. Локальное хранилище и cookies
 Cookies auto.kufar.by: _ga, _ga_D1TYH5F4Z4, _ga_ESH3WRCK3J, _ga_QITFZM0D0BE, _ga_WLP2F7MG5H (GA4, 5 потоков), _gcl_au (Google Ads), _tt_enable_cookie, _ttp (2 шт.) (TikTok Pixel).
+![](./file%20(10).webp)
 
 Cookies www.google.com (third-party): __Secure-1PAPISID, __Secure-1PSID, __Secure-1PSIDCC, __Secure-1PSIDTS, __Secure-3PAPISID, __Secure-3PSID, __Secure-3PSIDCC, __Secure-3PSIDTS, __Secure-BUCKET — Google-аутентификация и реклама.
+![](./file%20(11).webp)
 
 Local Storage auto.kufar.by: _GSD=1, _GUSM=[1790663364124, 1790663419691, 56, 2, 1, 56], _gcl_ls (Google Click ID), kufar-last-search (последний поисковый запрос), ma_cid=178308046334049889.
+![](./file%20(13).webp)
 
 Local Storage www.google.com: rc::h=1790663424327, rc::e=1 (reCAPTCHA).
+![](./file%20(14).webp)
 
 Session Storage auto.kufar.by: _GSD=1, tt_appInfo={"platform":"pc"}, tt_pixel_session_index={"index":1,"main":0}, tt_sessionId (TikTok-сессия).
+![](./file%20(15).webp)
 
 IndexedDB и Service Workers присутствуют, содержимое не раскрыто.
 
