@@ -142,9 +142,9 @@ Kufar.by — крупнейшая онлайн-площадка объявлен
 ## 3. Архитектура и технологический стек
 Серверная часть: Content-Type text/javascript и text/html, Cache-Control no-cache для JS, CSP script-src 'self', Cross-Origin-Resource-Policy cross-origin, Access-Control-Allow-Origin *, ETag присутствует, Last-Modified Thu, 20 Aug 2026 08:10:34 GMT. Статика отдаётся через CDN content.kufar.by с открытой CORS-политикой.
 ![](./file.webp)
-![](./file (1).webp)
 
 Клиентская часть: Turbopack (globalThis.TURBOPACK.push) — сборщик от Vercel для Next.js 13+. Sentry (_sentryModuleMetadata, sentry-application-key) — мониторинг ошибок. Хешированные чанки вида 24sqkk5g5cqop.js, 3inot-nff0kop.js, 01rnd8cwcq0sp.css — паттерн Next.js + Turbopack. CSS Modules на SCSS (классы styles-module-scss-module__I-Vmyq__content).
+![](./file%20(1).webp)
 
 Разметка: корневой div id="__next" подтверждает Next.js. Внутри div id="application", div id="content", div id="main-content", div id="bottom-bar". Link rel="preload" для SVG-иконок (оптимизация LCP). Noscript дважды. Script от Google Publisher Tags (pubads_impl.js) — Google Ad Manager.
 
