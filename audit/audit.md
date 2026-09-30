@@ -128,3 +128,66 @@ Local Storage:
 - Также зафиксированы fallback-запросы fm.txt?failedAssetLoad=... — обработка ошибок загрузки ресурсов.
 
 Вывод: drom.ru использует собственную систему аналитики и не подключает сторонние счётчики (по крайней мере, на главной странице).
+
+# Технический аудит Kufar.by
+
+## 1. Название ресурса / компании
+
+Kufar.by — крупнейшая онлайн-площадка объявлений в Беларуси. Юридическое лицо — ООО «Куфар Тех». Категории: авто, недвижимость, электроника, товары, услуги, работа.
+
+## 2. Адрес ресурса в сети
+Основной домен: https://www.kufar.by
+Поддомены: auto.kufar.by (авто), content.kufar.by (CDN), securepubads.g.doubleclick.net (реклама Google), cm.g.doubleclick.net (пиксели Google), www.google.com (reCAPTCHA, аналитика).
+
+## 3. Архитектура и технологический стек
+Серверная часть: Content-Type text/javascript и text/html, Cache-Control no-cache для JS, CSP script-src 'self', Cross-Origin-Resource-Policy cross-origin, Access-Control-Allow-Origin *, ETag присутствует, Last-Modified Thu, 20 Aug 2026 08:10:34 GMT. Статика отдаётся через CDN content.kufar.by с открытой CORS-политикой.
+![](./file.webp)
+
+Клиентская часть: Turbopack (globalThis.TURBOPACK.push) — сборщик от Vercel для Next.js 13+. Sentry (_sentryModuleMetadata, sentry-application-key) — мониторинг ошибок. Хешированные чанки вида 24sqkk5g5cqop.js, 3inot-nff0kop.js, 01rnd8cwcq0sp.css — паттерн Next.js + Turbopack. CSS Modules на SCSS (классы styles-module-scss-module__I-Vmyq__content).
+
+Разметка: корневой div id="__next" подтверждает Next.js. Внутри div id="application", div id="content", div id="main-content", div id="bottom-bar". Link rel="preload" для SVG-иконок (оптимизация LCP). Noscript дважды. Script от Google Publisher Tags (pubads_impl.js) — Google Ad Manager.
+
+Итоговый стек: Next.js (React) + SCSS Modules + Turbopack, CDN content.kufar.by, Sentry, Google Ad Manager, веб-сервер OpenResty/Nginx (косвенно).
+
+## 4. Семантические элементы HTML5
+Проверка через консоль: header=0, nav=0, main=0, article=0, aside=0, figure=0, time=0, section=47, footer=1. Итог: {section: 47, footer: 1}.
+
+Присутствуют только section (47) и footer (1). Отсутствуют header, nav, main, article, aside. Вместо main используется div id="main-content", вместо nav — div bottom-bar, верхняя панель — div id="application", карточки — section вместо article.
+
+Семантические классы (замена тегам): styles-module-scss-module__I-Vmyq__content (контейнер контента), styles-module-scss-module__I-Vmyq__content_main (основной контент), styles-module-scss-module__1y4UWm__bottom_bar (нижняя панель), snackBar-container-bottom (уведомления), Popups-styles-module__pP8E7G__overlay (оверлей попапа), Popups-styles-module__pP8E7G__container (контейнер попапа).
+
+Вывод: семантика частичная, что снижает Accessibility до 68/100.
+
+## 5. Адаптивность
+Mobile 375×667: одноколоночная вёрстка, кнопки «По новизне» и «Фильтры» на всю ширину, фиксированная нижняя навигация (Главная, Избранное, Объявления, Сообщения, Профиль), кнопка «Позвонить» крупная на всю ширину карточки.
+
+Desktop 1568: многоколоночный список объявлений (фото + описание + метаданные), верхняя панель с логотипом, поиском, «Подать объявление», «Войти», правый блок избранного.
+
+Media-запросы: обнаружен breakpoint @media only screen and (max-width: 560px). Используются SCSS-модули с вложенными media-запросами.
+
+Meta viewport: meta name="viewport" content="width=device-width, initial-scale=1" присутствует на auto.kufar.by и content.kufar.by.
+
+Вывод: ресурс адаптивен.
+
+## 6. Lighthouse
+Условия: университет, Гродно, Wi-Fi, MTS, Download 24.96 Мбит/с, Upload 5.63 Мбит/с, Ping 30 ms, Desktop, Chrome DevTools, https://www.kufar.by/l.
+
+Результаты: Performance 20/100, Accessibility 68/100, Best Practices 96/100, SEO 85/100.
+
+Причины: Performance низкий из-за тяжёлых JS-бандлов Turbopack, рекламы через securepubads.g.doubleclick.net, множества preload-ресурсов, Cache-Control no-cache для JS. Accessibility средний из-за отсутствия семантических тегов и, вероятно, проблем с alt и контрастом. Best Practices высокий благодаря HTTPS, CSP, HSTS. SEO в порядке.
+
+## 7. Локальное хранилище и cookies
+Cookies auto.kufar.by: _ga, _ga_D1TYH5F4Z4, _ga_ESH3WRCK3J, _ga_QITFZM0D0BE, _ga_WLP2F7MG5H (GA4, 5 потоков), _gcl_au (Google Ads), _tt_enable_cookie, _ttp (2 шт.) (TikTok Pixel).
+
+Cookies www.google.com (third-party): __Secure-1PAPISID, __Secure-1PSID, __Secure-1PSIDCC, __Secure-1PSIDTS, __Secure-3PAPISID, __Secure-3PSID, __Secure-3PSIDCC, __Secure-3PSIDTS, __Secure-BUCKET — Google-аутентификация и реклама.
+
+Local Storage auto.kufar.by: _GSD=1, _GUSM=[1790663364124, 1790663419691, 56, 2, 1, 56], _gcl_ls (Google Click ID), kufar-last-search (последний поисковый запрос), ma_cid=178308046334049889.
+
+Local Storage www.google.com: rc::h=1790663424327, rc::e=1 (reCAPTCHA).
+
+Session Storage auto.kufar.by: _GSD=1, tt_appInfo={"platform":"pc"}, tt_pixel_session_index={"index":1,"main":0}, tt_sessionId (TikTok-сессия).
+
+IndexedDB и Service Workers присутствуют, содержимое не раскрыто.
+
+## 8. Маркетинговые инструменты и аналитика
+Google Analytics 4 (5 потоков _ga*), Google Ads (_gcl_au, _gcl_ls), TikTok Pixel (_ttp, _tt_enable_cookie, tt_appInfo, tt_pixel_session_index, tt_sessionId), Google reCAPTCHA (rc::h, rc::e), Google Ad Manager (pubads_impl.js), DoubleClick (cm.g.doubleclick.net), Sentry (мониторинг ошибок), внутренний трекер inter (ping-запросы, статус 200, размер 0.0 kB, инициатор main.MWU2MzlzODM0OQ.js, время 150–552 ms).
