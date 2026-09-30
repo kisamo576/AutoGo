@@ -205,5 +205,5 @@ IndexedDB и Service Workers присутствуют, содержимое не
 ## 8. Маркетинговые инструменты и аналитика
 Google Analytics 4 (5 потоков _ga*), Google Ads (_gcl_au, _gcl_ls), TikTok Pixel (_ttp, _tt_enable_cookie, tt_appInfo, tt_pixel_session_index, tt_sessionId), Google reCAPTCHA (rc::h, rc::e), Google Ad Manager (pubads_impl.js), DoubleClick (cm.g.doubleclick.net), Sentry (мониторинг ошибок), внутренний трекер inter (ping-запросы, статус 200, размер 0.0 kB, инициатор main.MWU2MzlzODM0OQ.js, время 150–552 ms).
 
-Вывод
+Вывод: 
 Kufar.by использует комбинированную систему аналитики: сторонние счётчики (Google Analytics 4 в пяти потоках, TikTok Pixel, Google Ads, DoubleClick, Google Ad Manager) и собственную внутреннюю систему трекинга — эндпоинт inter, работающий через ping-запросы. Собственный трекер фиксирует поведенческие события на странице (просмотры, клики, время взаимодействия) и работает параллельно со сторонними пикселями.
