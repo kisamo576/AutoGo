@@ -6,31 +6,34 @@
     <title>AutoGO — Мой гараж</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
     <link rel="stylesheet" href="style.css">
     <style>
         .garage-car-card {
-            background: #1E293B;
+            background: var(--surface);
             border-radius: 20px;
-            border: 1px solid #334155;
+            border: 1px solid var(--border);
             padding: 1rem 1.2rem;
             cursor: pointer;
             transition: 0.2s;
             height: 100%;
         }
         .garage-car-card:hover, .garage-car-card.active {
-            border-color: #A855F7;
+            border-color: var(--accent-hover);
             transform: translateY(-2px);
         }
         .garage-car-card .car-title { font-weight: 700; font-size: 1.1rem; }
         .autogo-tab-btns .btn { margin-right: 0.4rem; margin-bottom: 0.4rem; }
-        table.autogo-table { width: 100%; color: #E2E8F0; }
-        table.autogo-table th, table.autogo-table td { padding: 0.5rem 0.7rem; border-bottom: 1px solid #334155; font-size: 0.9rem; }
-        table.autogo-table th { color: #94A3B8; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
-        .stat-box { background: #0F172A; border-radius: 14px; padding: 0.8rem; text-align: center; }
-        .stat-box .val { font-size: 1.3rem; font-weight: 800; color: #10B981; }
-        .stat-box .lbl { font-size: 0.75rem; color: #94A3B8; }
-        .reminder-due { border-left: 3px solid #EF4444; }
-        .reminder-ok { border-left: 3px solid #10B981; }
+        table.autogo-table { width: 100%; color: var(--text); }
+        table.autogo-table th, table.autogo-table td { padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        table.autogo-table th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
+        .stat-box { background: var(--surface-sunken); border-radius: 14px; padding: 0.8rem; text-align: center; }
+        .stat-box .val { font-size: 1.3rem; font-weight: 800; color: var(--success); }
+        .stat-box .lbl { font-size: 0.75rem; color: var(--text-muted); }
+        .reminder-due { border-left: 3px solid var(--danger); }
+        .reminder-ok { border-left: 3px solid var(--success); }
     </style>
 </head>
 <body>
@@ -125,6 +128,54 @@
                         <div class="col-6"><label class="form-label">Следующее ТО до даты</label><input type="date" class="form-control" id="moNextDate"></div>
                     </div>
                     <div id="maintenanceFormError" class="alert alert-danger mt-3" style="display:none;"></div>
+                    <button type="submit" class="btn btn-purple w-100 mt-3">Добавить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="partFormModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary"><h5 class="modal-title">Замена детали</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <form id="partForm">
+                    <div class="row g-2">
+                        <div class="col-6"><label class="form-label">Дата</label><input type="date" class="form-control" id="partDate" required></div>
+                        <div class="col-6"><label class="form-label">Пробег (км)</label><input type="number" class="form-control" id="partOdometer"></div>
+                        <div class="col-12"><label class="form-label">Деталь*</label><input class="form-control" id="partName" placeholder="Например: передние тормозные колодки" required></div>
+                        <div class="col-6"><label class="form-label">Стоимость ($)</label><input type="number" step="0.01" class="form-control" id="partCost" value="0"></div>
+                        <div class="col-12"><label class="form-label">Заметка</label><input class="form-control" id="partNote"></div>
+                    </div>
+                    <div id="partFormError" class="alert alert-danger mt-3" style="display:none;"></div>
+                    <button type="submit" class="btn btn-purple w-100 mt-3">Добавить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="inspectionFormModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary"><h5 class="modal-title">Новая проверка</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <form id="inspectionForm">
+                    <div class="row g-2">
+                        <div class="col-12"><label class="form-label">Тип*</label>
+                            <select class="form-select" id="inspectionType">
+                                <option value="tech_inspection">Техосмотр</option>
+                                <option value="insurance">Страховка</option>
+                                <option value="other">Другое</option>
+                            </select>
+                        </div>
+                        <div class="col-6"><label class="form-label">Дата оформления</label><input type="date" class="form-control" id="inspectionIssued"></div>
+                        <div class="col-6"><label class="form-label">Действует до*</label><input type="date" class="form-control" id="inspectionExpiry" required></div>
+                        <div class="col-6"><label class="form-label">Стоимость ($)</label><input type="number" step="0.01" class="form-control" id="inspectionCost"></div>
+                        <div class="col-12"><label class="form-label">Заметка</label><input class="form-control" id="inspectionNote"></div>
+                    </div>
+                    <div id="inspectionFormError" class="alert alert-danger mt-3" style="display:none;"></div>
                     <button type="submit" class="btn btn-purple w-100 mt-3">Добавить</button>
                 </form>
             </div>

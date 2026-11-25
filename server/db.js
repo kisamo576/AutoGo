@@ -63,6 +63,28 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS part_replacements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    car_id INTEGER NOT NULL REFERENCES garage_cars(id) ON DELETE CASCADE,
+    replaced_date TEXT NOT NULL,
+    odometer INTEGER,
+    part_name TEXT NOT NULL,
+    cost REAL NOT NULL DEFAULT 0,
+    note TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS inspections (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    car_id INTEGER NOT NULL REFERENCES garage_cars(id) ON DELETE CASCADE,
+    inspection_type TEXT NOT NULL,
+    issued_date TEXT,
+    expiry_date TEXT NOT NULL,
+    cost REAL,
+    note TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
   CREATE TABLE IF NOT EXISTS forum_categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,

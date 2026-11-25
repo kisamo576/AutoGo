@@ -177,4 +177,80 @@ router.get('/:carId/maintenance-reminders', loadOwnCar, (req, res) => {
   res.json({ current_odometer: req.car.odometer, reminders });
 });
 
+router.get('/:carId/parts', loadOwnCar, (req, res) => {
+  const parts = db.prepare('SELECT * FROM part_replacements WHERE car_id = ? ORDER BY replaced_date DESC, id DESC').all(req.car.id);
+  res.json({ parts });
+});
+
+router.post('/:carId/parts', loadOwnCar, (req, res) => {
+  const { replaced_date, odometer, part_name, cost, note } = req.body || {};
+  if (!replaced_date || !part_name) {
+    return res.status(400).json({ error: 'Укажите дату и название детали' });
+  }
+  const info = db.prepare(`INSERT INTO part_replacements (car_id, replaced_date, odometer, part_name, cost, note)
+    VALUES (?, ?, ?, ?, ?, ?)`).run(
+    req.car.id, replaced_date, odometer ?? null, part_name, cost || 0, note || null
+  );
+  if (odometer && odometer > req.car.odometer) {
+    db.prepare('UPDATE garage_cars SET odometer = ? WHERE id = ?').run(odometer, req.car.id);
+  }
+  const part = db.prepare('SELECT * FROM part_replacements WHERE id = ?').get(info.lastInsertRowid);
+  res.status(201).json({ part });
+});
+
+router.delete('/:carId/parts/:partId', loadOwnCar, (req, res) => {
+  const part = db.prepare('SELECT * FROM part_replacements WHERE id = ? AND car_id = ?').get(req.params.partId, req.car.id);
+  if (!part) return res.status(404).json({ error: 'Запись не найдена' });
+  db.prepare('DELETE FROM part_replacements WHERE id = ?').run(part.id);
+  res.json({ ok: true });
+});
+
+router.get('/:carId/inspections', loadOwnCar, (req, res) => {
+  const inspections = db.prepare('SELECT * FROM inspections WHERE car_id = ? ORDER BY expiry_date ASC, id DESC').all(req.car.id);
+  res.json({ inspections });
+});
+
+router.post('/:carId/inspections', loadOwnCar, (req, res) => {
+  const { inspection_type, issued_date, expiry_date, cost, note } = req.body || {};
+  const validTypes = ['tech_inspection', 'insurance', 'other'];
+  if (!validTypes.includes(inspection_type)) {
+    return res.status(400).json({ error: 'inspection_type должен быть tech_inspection, insurance или other' });
+  }
+  if (!expiry_date) return res.status(400).json({ error: 'Укажите дату, до которой действует проверка' });
+
+  const info = db.prepare(`INSERT INTO inspections (car_id, inspection_type, issued_date, expiry_date, cost, note)
+    VALUES (?, ?, ?, ?, ?, ?)`).run(
+    req.car.id, inspection_type, issued_date || null, expiry_date, cost ?? null, note || null
+  );
+  const inspection = db.prepare('SELECT * FROM inspections WHERE id = ?').get(info.lastInsertRowid);
+  res.status(201).json({ inspection });
+});
+
+router.delete('/:carId/inspections/:inspectionId', loadOwnCar, (req, res) => {
+  const inspection = db.prepare('SELECT * FROM inspections WHERE id = ? AND car_id = ?').get(req.params.inspectionId, req.car.id);
+  if (!inspection) return res.status(404).json({ error: 'Запись не найдена' });
+  db.prepare('DELETE FROM inspections WHERE id = ?').run(inspection.id);
+  res.json({ ok: true });
+});
+
+router.get('/:carId/inspection-reminders', loadOwnCar, (req, res) => {
+  const inspections = db.prepare('SELECT * FROM inspections WHERE car_id = ? ORDER BY expiry_date ASC').all(req.car.id);
+  const INSPECTION_LABELS = { tech_inspection: 'Техосмотр', insurance: 'Страховка', other: 'Другое' };
+
+  const reminders = inspections.map(insp => {
+    const daysLeft = Math.ceil((new Date(insp.expiry_date) - new Date()) / (1000 * 60 * 60 * 24));
+    return {
+      id: insp.id,
+      type: insp.inspection_type,
+      label: INSPECTION_LABELS[insp.inspection_type] || insp.inspection_type,
+      expiry_date: insp.expiry_date,
+      days_left: daysLeft,
+      is_due: daysLeft <= 0,
+      is_due_soon: daysLeft > 0 && daysLeft <= 30
+    };
+  });
+
+  res.json({ reminders });
+});
+
 module.exports = router;

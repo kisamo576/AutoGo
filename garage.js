@@ -79,6 +79,8 @@ function renderDetail() {
         <button class="btn btn-sm ${activeTab === 'info' ? 'btn-purple' : 'btn-outline-purple'}" data-tab="info">Характеристики</button>
         <button class="btn btn-sm ${activeTab === 'fuel' ? 'btn-purple' : 'btn-outline-purple'}" data-tab="fuel"><i class="bi bi-fuel-pump"></i> Заправки/зарядки</button>
         <button class="btn btn-sm ${activeTab === 'maintenance' ? 'btn-purple' : 'btn-outline-purple'}" data-tab="maintenance"><i class="bi bi-wrench-adjustable"></i> ТО</button>
+        <button class="btn btn-sm ${activeTab === 'parts' ? 'btn-purple' : 'btn-outline-purple'}" data-tab="parts"><i class="bi bi-gear"></i> Запчасти</button>
+        <button class="btn btn-sm ${activeTab === 'inspections' ? 'btn-purple' : 'btn-outline-purple'}" data-tab="inspections"><i class="bi bi-shield-check"></i> Проверки</button>
       </div>
       <div id="carDetailContent"></div>
     </div>
@@ -91,7 +93,9 @@ function renderDetail() {
   const content = document.getElementById('carDetailContent');
   if (activeTab === 'info') renderInfoTab(content, car);
   else if (activeTab === 'fuel') renderFuelTab(content, car);
-  else renderMaintenanceTab(content, car);
+  else if (activeTab === 'maintenance') renderMaintenanceTab(content, car);
+  else if (activeTab === 'parts') renderPartsTab(content, car);
+  else renderInspectionsTab(content, car);
 }
 
 function renderInfoTab(content, car) {
@@ -233,6 +237,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  document.getElementById('partForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const carId = e.target.dataset.carId;
+    const errorDiv = document.getElementById('partFormError');
+    errorDiv.style.display = 'none';
+    try {
+      await api(`/api/garage/${carId}/parts`, {
+        method: 'POST',
+        body: JSON.stringify({
+          replaced_date: document.getElementById('partDate').value,
+          odometer: document.getElementById('partOdometer').value ? parseInt(document.getElementById('partOdometer').value, 10) : null,
+          part_name: document.getElementById('partName').value,
+          cost: parseFloat(document.getElementById('partCost').value || '0'),
+          note: document.getElementById('partNote').value
+        })
+      });
+      bootstrap.Modal.getInstance(document.getElementById('partFormModal')).hide();
+      await loadCars();
+    } catch (err) {
+      errorDiv.textContent = err.message;
+      errorDiv.style.display = 'block';
+    }
+  });
+
+  document.getElementById('inspectionForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const carId = e.target.dataset.carId;
+    const errorDiv = document.getElementById('inspectionFormError');
+    errorDiv.style.display = 'none';
+    try {
+      await api(`/api/garage/${carId}/inspections`, {
+        method: 'POST',
+        body: JSON.stringify({
+          inspection_type: document.getElementById('inspectionType').value,
+          issued_date: document.getElementById('inspectionIssued').value || null,
+          expiry_date: document.getElementById('inspectionExpiry').value,
+          cost: document.getElementById('inspectionCost').value ? parseFloat(document.getElementById('inspectionCost').value) : null,
+          note: document.getElementById('inspectionNote').value
+        })
+      });
+      bootstrap.Modal.getInstance(document.getElementById('inspectionFormModal')).hide();
+      await loadCars();
+    } catch (err) {
+      errorDiv.textContent = err.message;
+      errorDiv.style.display = 'block';
+    }
+  });
+
   document.getElementById('carForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const errorDiv = document.getElementById('carFormError');
@@ -325,6 +377,123 @@ async function renderMaintenanceTab(content, car) {
   } catch (err) {
     content.innerHTML = `<div class="alert alert-danger">${esc(err.message)}</div>`;
   }
+}
+
+async function renderPartsTab(content, car) {
+  content.innerHTML = `<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-purple"></div></div>`;
+  try {
+    const { parts } = await api(`/api/garage/${car.id}/parts`);
+
+    const rowsHtml = parts.map(p => `
+      <tr>
+        <td>${p.replaced_date}</td>
+        <td>${esc(p.part_name)}</td>
+        <td>${p.odometer != null ? p.odometer.toLocaleString() + ' км' : '—'}</td>
+        <td>${p.cost} $</td>
+        <td>${p.note ? esc(p.note) : '—'}</td>
+        <td><button class="btn btn-sm btn-outline-danger" data-del-part="${p.id}"><i class="bi bi-trash"></i></button></td>
+      </tr>
+    `).join('');
+
+    content.innerHTML = `
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Замены запчастей</h5>
+        <button class="btn btn-purple btn-sm" id="addPartBtn"><i class="bi bi-plus-circle"></i> Добавить запись</button>
+      </div>
+      ${parts.length ? `
+        <div class="table-responsive"><table class="autogo-table">
+          <thead><tr><th>Дата</th><th>Деталь</th><th>Пробег</th><th>Стоимость</th><th>Заметка</th><th></th></tr></thead>
+          <tbody>${rowsHtml}</tbody>
+        </table></div>
+      ` : '<div class="autogo-empty-state">Замен пока не было</div>'}
+    `;
+
+    document.getElementById('addPartBtn').addEventListener('click', () => openPartModal(car));
+    content.querySelectorAll('[data-del-part]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Удалить запись?')) return;
+        await api(`/api/garage/${car.id}/parts/${btn.dataset.delPart}`, { method: 'DELETE' });
+        renderPartsTab(content, car);
+      });
+    });
+  } catch (err) {
+    content.innerHTML = `<div class="alert alert-danger">${esc(err.message)}</div>`;
+  }
+}
+
+function openPartModal(car) {
+  const form = document.getElementById('partForm');
+  form.reset();
+  document.getElementById('partFormError').style.display = 'none';
+  document.getElementById('partDate').value = new Date().toISOString().slice(0, 10);
+  form.dataset.carId = car.id;
+  new bootstrap.Modal(document.getElementById('partFormModal')).show();
+}
+
+const INSPECTION_LABELS = { tech_inspection: 'Техосмотр', insurance: 'Страховка', other: 'Другое' };
+
+async function renderInspectionsTab(content, car) {
+  content.innerHTML = `<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-purple"></div></div>`;
+  try {
+    const [{ inspections }, { reminders }] = await Promise.all([
+      api(`/api/garage/${car.id}/inspections`),
+      api(`/api/garage/${car.id}/inspection-reminders`)
+    ]);
+
+    const remindersHtml = reminders.map(r => `
+      <div class="autogo-page-card ${r.is_due ? 'reminder-due' : 'reminder-ok'} mb-2 py-2">
+        <strong>${esc(r.label)}</strong><br>
+        <span class="small text-secondary">
+          Действует до ${r.expiry_date}
+          ${r.is_due ? ' · <span class="text-danger fw-bold">Срок истёк</span>' : r.is_due_soon ? ` · <span class="text-warning fw-bold">Осталось ${r.days_left} дн.</span>` : ` · осталось ${r.days_left} дн.`}
+        </span>
+      </div>
+    `).join('');
+
+    const rowsHtml = inspections.map(i => `
+      <tr>
+        <td>${INSPECTION_LABELS[i.inspection_type] || i.inspection_type}</td>
+        <td>${i.issued_date || '—'}</td>
+        <td>${i.expiry_date}</td>
+        <td>${i.cost != null ? i.cost + ' $' : '—'}</td>
+        <td>${i.note ? esc(i.note) : '—'}</td>
+        <td><button class="btn btn-sm btn-outline-danger" data-del-insp="${i.id}"><i class="bi bi-trash"></i></button></td>
+      </tr>
+    `).join('');
+
+    content.innerHTML = `
+      ${remindersHtml ? `<h5 class="mb-2">Напоминания</h5>${remindersHtml}` : ''}
+      <div class="d-flex justify-content-between align-items-center mb-2 mt-3">
+        <h5 class="mb-0">Техосмотр и страховка</h5>
+        <button class="btn btn-purple btn-sm" id="addInspectionBtn"><i class="bi bi-plus-circle"></i> Добавить запись</button>
+      </div>
+      ${inspections.length ? `
+        <div class="table-responsive"><table class="autogo-table">
+          <thead><tr><th>Тип</th><th>Оформлено</th><th>Действует до</th><th>Стоимость</th><th>Заметка</th><th></th></tr></thead>
+          <tbody>${rowsHtml}</tbody>
+        </table></div>
+      ` : '<div class="autogo-empty-state">Записей пока нет</div>'}
+    `;
+
+    document.getElementById('addInspectionBtn').addEventListener('click', () => openInspectionModal(car));
+    content.querySelectorAll('[data-del-insp]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Удалить запись?')) return;
+        await api(`/api/garage/${car.id}/inspections/${btn.dataset.delInsp}`, { method: 'DELETE' });
+        renderInspectionsTab(content, car);
+      });
+    });
+  } catch (err) {
+    content.innerHTML = `<div class="alert alert-danger">${esc(err.message)}</div>`;
+  }
+}
+
+function openInspectionModal(car) {
+  const form = document.getElementById('inspectionForm');
+  form.reset();
+  document.getElementById('inspectionFormError').style.display = 'none';
+  form.dataset.carId = car.id;
+  new bootstrap.Modal(document.getElementById('inspectionFormModal')).show();
 }
 
 function openAddCarModal() {

@@ -97,6 +97,69 @@ test('полный цикл: авто → заправка → статисти�
   assert.equal(stats.avgPer100km, 7);
 });
 
+test('запчасти и проверки: добавление и напоминания', async () => {
+  const email = `parts_${Date.now()}@example.com`;
+  const registerRes = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password: 'password123', name: 'Запчасти Тестов' })
+  });
+  const cookie = extractCookie(registerRes);
+  const authHeaders = { 'Content-Type': 'application/json', Cookie: cookie };
+
+  const carRes = await fetch(`${baseUrl}/api/garage`, {
+    method: 'POST',
+    headers: authHeaders,
+    body: JSON.stringify({ brand: 'Honda', model: 'Civic', year: 2019, odometer: 50000 })
+  });
+  const { car } = await carRes.json();
+
+  const partRes = await fetch(`${baseUrl}/api/garage/${car.id}/parts`, {
+    method: 'POST', headers: authHeaders,
+    body: JSON.stringify({ replaced_date: '2026-01-01', odometer: 50100, part_name: 'Тормозные колодки', cost: 80 })
+  });
+  assert.equal(partRes.status, 201);
+
+  const partsListRes = await fetch(`${baseUrl}/api/garage/${car.id}/parts`, { headers: authHeaders });
+  const partsList = await partsListRes.json();
+  assert.equal(partsList.parts.length, 1);
+
+  const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const inspRes = await fetch(`${baseUrl}/api/garage/${car.id}/inspections`, {
+    method: 'POST', headers: authHeaders,
+    body: JSON.stringify({ inspection_type: 'insurance', expiry_date: pastDate })
+  });
+  assert.equal(inspRes.status, 201);
+
+  const remindersRes = await fetch(`${baseUrl}/api/garage/${car.id}/inspection-reminders`, { headers: authHeaders });
+  const reminders = await remindersRes.json();
+  assert.equal(reminders.reminders.length, 1);
+  assert.equal(reminders.reminders[0].is_due, true);
+});
+
+test('данные гаража сохраняются и видны после повторного запроса', async () => {
+  const email = `persist_${Date.now()}@example.com`;
+  const registerRes = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password: 'password123', name: 'Персист Тестов' })
+  });
+  const cookie = extractCookie(registerRes);
+  const authHeaders = { 'Content-Type': 'application/json', Cookie: cookie };
+
+  const carRes = await fetch(`${baseUrl}/api/garage`, {
+    method: 'POST', headers: authHeaders,
+    body: JSON.stringify({ brand: 'Mazda', model: '3', year: 2020, odometer: 15000 })
+  });
+  const { car } = await carRes.json();
+
+  const reloadRes = await fetch(`${baseUrl}/api/garage/${car.id}`, { headers: authHeaders });
+  const reload = await reloadRes.json();
+  assert.equal(reload.car.brand, 'Mazda');
+  assert.equal(reload.car.model, '3');
+  assert.equal(reload.car.odometer, 15000);
+});
+
 test('форум: создание темы и ответа', async () => {
   const email = `forum_${Date.now()}@example.com`;
   const registerRes = await fetch(`${baseUrl}/api/auth/register`, {
