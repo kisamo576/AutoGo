@@ -66,7 +66,7 @@ function searchAndRedirect() {
 }
 
 function createStaticCard(car, isPremium = false) {
-    const onerror = `this.style.display='none'`;
+    const onerror = `this.onerror=null; this.src='${NO_PHOTO_IMG}';`;
     return `
         <div class="col-md-6 col-lg-4">
             <div class="car-card">

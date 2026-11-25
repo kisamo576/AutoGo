@@ -5,29 +5,23 @@
     <title>AutoGO — Личный кабинет</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
     <link rel="stylesheet" href="style.css">
     <style>
-        .btn-danger-custom {
-            background: #DC2626;
-            box-shadow: 0 2px 8px rgba(220,38,38,0.4);
-            color: white;
-        }
-        .btn-danger-custom:hover {
-            background: #B91C1C;
-            transform: translateY(-1px);
-        }
         .list-group-item {
-            background: #1E293B !important;
-            color: #E2E8F0 !important;
-            border-color: #334155 !important;
+            background: var(--surface) !important;
+            color: var(--text) !important;
+            border-color: var(--border) !important;
         }
         .list-group-item.active {
-            background: #8B5CF6 !important;
-            border-color: #8B5CF6 !important;
+            background: var(--accent) !important;
+            border-color: var(--accent) !important;
             color: white !important;
         }
         .list-group-item:hover:not(.active) {
-            background: #334155 !important;
+            background: var(--border) !important;
         }
     </style>
 </head>
@@ -38,7 +32,6 @@
             <a class="navbar-brand" href="index.html"><i class="bi bi-car-front"></i> AutoGO</a>
             <div class="d-flex gap-2">
                 <button class="btn btn-danger-custom btn-sm" onclick="window.location.href='add_ad.html'">Подать объявление</button>
-                <a href="index.html" class="btn btn-outline-purple btn-sm">Выйти</a>
             </div>
         </div>
     </nav>
