@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoGO — Форум</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .category-pill { cursor: pointer; }
+        .category-pill.active { background: #8B5CF6 !important; color: white !important; }
+        .topic-row { background: #1E293B; border: 1px solid #334155; border-radius: 16px; padding: 0.8rem 1rem; margin-bottom: 0.6rem; transition: 0.2s; }
+        .topic-row:hover { border-color: #A855F7; }
+        .topic-row a { color: #F1F5F9; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="bi bi-car-front"></i> AutoGO</a>
+        </div>
+    </nav>
+</header>
+
+<main class="container my-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+        <h2 class="mb-0">💬 Форум</h2>
+        <button class="btn btn-purple" id="newTopicBtn"><i class="bi bi-plus-circle"></i> Новая тема</button>
+    </div>
+
+    <div id="categoriesBar" class="d-flex flex-wrap gap-2 mb-4"></div>
+    <div id="topicsList"><div class="text-center py-5"><div class="spinner-border text-purple"></div></div></div>
+</main>
+
+<div class="modal fade" id="newTopicModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary"><h5 class="modal-title">Новая тема</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <form id="newTopicForm">
+                    <div class="mb-2"><label class="form-label">Раздел</label><select class="form-select" id="newTopicCategory" required></select></div>
+                    <div class="mb-2"><label class="form-label">Заголовок</label><input class="form-control" id="newTopicTitle" required></div>
+                    <div class="mb-2"><label class="form-label">Сообщение</label><textarea class="form-control" id="newTopicContent" rows="4" required></textarea></div>
+                    <div id="newTopicError" class="alert alert-danger mt-2" style="display:none;"></div>
+                    <button type="submit" class="btn btn-purple w-100 mt-2">Создать тему</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="border-top mt-5 py-4 text-center text-secondary small">© 2025 AutoGO</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="nav.js"></script>
+<script src="forum.js"></script>
+</body>
+</html>

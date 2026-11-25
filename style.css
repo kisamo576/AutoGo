@@ -451,3 +451,88 @@ footer {
         padding-right: 12px;
     }
 }
+
+/* ========== ПОДМЕНЮ РАЗДЕЛОВ (гараж/форум/документация/помощник) ========== */
+.autogo-subnav {
+    background: #0F172A;
+    border-bottom: 1px solid #1E293B;
+    padding: 0.5rem 0;
+}
+
+.autogo-subnav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.autogo-subnav-links {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.autogo-subnav-links a {
+    color: #CBD5E1;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.4rem 0.9rem;
+    border-radius: 40px;
+    transition: 0.2s;
+}
+
+.autogo-subnav-links a:hover {
+    background: #1E293B;
+    color: #F1F5F9;
+}
+
+.autogo-subnav-links a.active {
+    background: #8B5CF6;
+    color: white;
+}
+
+.autogo-auth-area {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.autogo-auth-chip {
+    color: #94A3B8;
+    font-size: 0.85rem;
+}
+
+.autogo-auth-chip strong {
+    color: #F1F5F9;
+}
+
+/* ========== ОБЩИЕ СТИЛИ КОНТЕНТНЫХ СТРАНИЦ (гараж/форум/документация/агент) ========== */
+.autogo-page-card {
+    background: #1E293B;
+    border-radius: 24px;
+    border: 1px solid #334155;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.autogo-empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: #94A3B8;
+}
+
+.autogo-tag {
+    display: inline-block;
+    background: #0F172A;
+    color: #94A3B8;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 40px;
+    margin-right: 0.3rem;
+}
+
+.autogo-tag.danger { color: #F87171; }
+.autogo-tag.success { color: #34D399; }
+.autogo-tag.warning { color: #FBBF24; }

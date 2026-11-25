@@ -64,10 +64,6 @@
                         </ul>
                     </li>
                     <li class="nav-item"><span class="nav-divider mx-2"></span></li>
-                    <li class="nav-item"><button class="nav-link btn btn-link" data-bs-toggle="modal" data-bs-target="#registerModal" style="border:none; background:transparent;">Регистрация</button></li>
-                    <li class="nav-item"><span class="nav-divider mx-1"></span></li>
-                    <li class="nav-item"><button class="nav-link btn btn-link" data-bs-toggle="modal" data-bs-target="#loginModal" style="border:none; background:transparent;">Войти</button></li>
-                    <li class="nav-item"><span class="nav-divider mx-2"></span></li>
                     <li class="nav-item"><button class="btn btn-danger-custom btn-sm" onclick="window.location.href='add_ad.html'">Подать объявление</button></li>
                     <li class="nav-item"><span class="nav-divider mx-2"></span></li>
                     <li class="nav-item"><button class="btn btn-warning btn-sm text-dark fw-bold" onclick="window.location.href='premium.html'">⭐ Купить премиум</button></li>
@@ -180,40 +176,6 @@
     </div>
 </main>
 
-<div class="modal fade" id="loginModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark text-white border-secondary">
-            <div class="modal-header border-secondary"><h5 class="modal-title">🔐 Вход</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body">
-                <form id="loginForm">
-                    <div class="mb-3"><label class="form-label">Логин</label><input type="text" class="form-control" placeholder="user / admin" required></div>
-                    <div class="mb-3"><label class="form-label">Пароль</label><input type="password" class="form-control" placeholder="123 / admin123" required></div>
-                    <button type="submit" class="btn btn-purple w-100">Войти</button>
-                    <div id="loginError" class="alert alert-danger mt-2" style="display:none;">Неверный логин/пароль</div>
-                    <div class="text-center mt-3"><a href="#" class="text-secondary small" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal">Нет аккаунта? Регистрация</a></div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="registerModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark text-white border-secondary">
-            <div class="modal-header border-secondary"><h5 class="modal-title">📝 Регистрация</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body">
-                <form id="registerForm">
-                    <div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" placeholder="example@mail.com" required></div>
-                    <div class="mb-3"><label class="form-label">Пароль</label><input type="password" class="form-control" placeholder="Минимум 3 символа" required></div>
-                    <div class="mb-3"><label class="form-label">Повторите пароль</label><input type="password" class="form-control" required></div>
-                    <button type="submit" class="btn btn-purple w-100">Зарегистрироваться</button>
-                    <div id="registerError" class="alert alert-danger mt-2" style="display:none;"></div>
-                    <div class="text-center mt-3"><a href="#" class="text-secondary small" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">Уже есть аккаунт? Войти</a></div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <footer class="border-top mt-5 py-4">
     <div class="container">
         <div class="row">
@@ -228,5 +190,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="cars.js"></script>
 <script src="script.js"></script>
+<script src="nav.js"></script>
 </body>
 </html>

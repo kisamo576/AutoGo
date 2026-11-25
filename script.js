@@ -139,51 +139,7 @@ document.getElementById('resetBtn')?.addEventListener('click', () => {
     if (volTo) volTo.value = '';
 });
 
-const loginForm = document.getElementById('loginForm');
-if (loginForm) {
-    loginForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const login = this.querySelector('input[type="text"]').value;
-        const pass = this.querySelector('input[type="password"]').value;
-        const errorDiv = document.getElementById('loginError');
-        if (login === 'user' && pass === '123') {
-            window.location.href = 'profile.html';
-        } else if (login === 'admin' && pass === 'admin123') {
-            window.location.href = 'admin.html';
-        } else if (errorDiv) {
-            errorDiv.style.display = 'block';
-            setTimeout(() => errorDiv.style.display = 'none', 3000);
-        }
-    });
-}
-
-const registerForm = document.getElementById('registerForm');
-if (registerForm) {
-    registerForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const p1 = this.querySelectorAll('input[type="password"]')[0].value;
-        const p2 = this.querySelectorAll('input[type="password"]')[1].value;
-        const errorDiv = document.getElementById('registerError');
-        if (p1 !== p2) {
-            if (errorDiv) {
-                errorDiv.innerText = 'Пароли не совпадают';
-                errorDiv.style.display = 'block';
-                setTimeout(() => errorDiv.style.display = 'none', 3000);
-            }
-            return;
-        }
-        if (p1.length < 3) {
-            if (errorDiv) {
-                errorDiv.innerText = 'Пароль минимум 3 символа';
-                errorDiv.style.display = 'block';
-            }
-            return;
-        }
-        alert('Регистрация успешна! Теперь войдите.');
-        bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
-        new bootstrap.Modal(document.getElementById('loginModal')).show();
-    });
-}
+// Логин/регистрация реализованы централизованно в nav.js (реальные вызовы API)
 
 const allParamsModal = document.getElementById('allParamsModal');
 if (allParamsModal) {

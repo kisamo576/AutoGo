@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoGO — Мой гараж</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .garage-car-card {
+            background: #1E293B;
+            border-radius: 20px;
+            border: 1px solid #334155;
+            padding: 1rem 1.2rem;
+            cursor: pointer;
+            transition: 0.2s;
+            height: 100%;
+        }
+        .garage-car-card:hover, .garage-car-card.active {
+            border-color: #A855F7;
+            transform: translateY(-2px);
+        }
+        .garage-car-card .car-title { font-weight: 700; font-size: 1.1rem; }
+        .autogo-tab-btns .btn { margin-right: 0.4rem; margin-bottom: 0.4rem; }
+        table.autogo-table { width: 100%; color: #E2E8F0; }
+        table.autogo-table th, table.autogo-table td { padding: 0.5rem 0.7rem; border-bottom: 1px solid #334155; font-size: 0.9rem; }
+        table.autogo-table th { color: #94A3B8; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
+        .stat-box { background: #0F172A; border-radius: 14px; padding: 0.8rem; text-align: center; }
+        .stat-box .val { font-size: 1.3rem; font-weight: 800; color: #10B981; }
+        .stat-box .lbl { font-size: 0.75rem; color: #94A3B8; }
+        .reminder-due { border-left: 3px solid #EF4444; }
+        .reminder-ok { border-left: 3px solid #10B981; }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="bi bi-car-front"></i> AutoGO</a>
+            <a href="profile.html" class="btn btn-outline-purple btn-sm">← Личный кабинет</a>
+        </div>
+    </nav>
+</header>
+
+<main class="container my-4">
+    <div id="garageRoot">
+        <div class="text-center py-5"><div class="spinner-border text-purple"></div></div>
+    </div>
+</main>
+
+<!-- Модалка добавления/редактирования авто -->
+<div class="modal fade" id="carFormModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="carFormModalTitle">Добавить автомобиль</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="carForm">
+                    <input type="hidden" id="carId">
+                    <div class="row g-2">
+                        <div class="col-6"><label class="form-label">Марка*</label><input class="form-control" id="carBrand" required></div>
+                        <div class="col-6"><label class="form-label">Модель*</label><input class="form-control" id="carModel" required></div>
+                        <div class="col-6"><label class="form-label">Год</label><input type="number" class="form-control" id="carYear"></div>
+                        <div class="col-6"><label class="form-label">Пробег (км)</label><input type="number" class="form-control" id="carOdometer" value="0"></div>
+                        <div class="col-6"><label class="form-label">Тип топлива</label>
+                            <select class="form-select" id="carFuelType">
+                                <option value="petrol">Бензин</option>
+                                <option value="diesel">Дизель</option>
+                                <option value="electric">Электро</option>
+                                <option value="hybrid">Гибрид</option>
+                            </select>
+                        </div>
+                        <div class="col-6"><label class="form-label">Объём двигателя (л)</label><input type="number" step="0.1" class="form-control" id="carEngineVolume"></div>
+                        <div class="col-6"><label class="form-label">VIN</label><input class="form-control" id="carVin"></div>
+                        <div class="col-6"><label class="form-label">Госномер</label><input class="form-control" id="carPlate"></div>
+                        <div class="col-12"><label class="form-label">Заметка</label><textarea class="form-control" id="carNote" rows="2"></textarea></div>
+                    </div>
+                    <div id="carFormError" class="alert alert-danger mt-3" style="display:none;"></div>
+                    <button type="submit" class="btn btn-purple w-100 mt-3">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка добавления записи заправки/зарядки -->
+<div class="modal fade" id="fuelFormModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary"><h5 class="modal-title">Новая запись</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <form id="fuelForm">
+                    <div class="row g-2">
+                        <div class="col-6"><label class="form-label">Тип</label>
+                            <select class="form-select" id="fuelEntryType"><option value="fuel">Заправка</option><option value="charge">Зарядка</option></select>
+                        </div>
+                        <div class="col-6"><label class="form-label">Дата</label><input type="date" class="form-control" id="fuelDate" required></div>
+                        <div class="col-6"><label class="form-label">Объём (л / кВт·ч)</label><input type="number" step="0.01" class="form-control" id="fuelAmount" required></div>
+                        <div class="col-6"><label class="form-label">Стоимость ($)</label><input type="number" step="0.01" class="form-control" id="fuelCost" required></div>
+                        <div class="col-6"><label class="form-label">Пробег на момент (км)</label><input type="number" class="form-control" id="fuelOdometer" required></div>
+                        <div class="col-6"><label class="form-label">АЗС/Станция</label><input class="form-control" id="fuelStation"></div>
+                    </div>
+                    <div id="fuelFormError" class="alert alert-danger mt-3" style="display:none;"></div>
+                    <button type="submit" class="btn btn-purple w-100 mt-3">Добавить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка добавления записи ТО -->
+<div class="modal fade" id="maintenanceFormModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary"><h5 class="modal-title">Новая запись ТО</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <form id="maintenanceForm">
+                    <div class="row g-2">
+                        <div class="col-6"><label class="form-label">Дата</label><input type="date" class="form-control" id="moDate" required></div>
+                        <div class="col-6"><label class="form-label">Пробег (км)</label><input type="number" class="form-control" id="moOdometer" required></div>
+                        <div class="col-12"><label class="form-label">Что сделано*</label><input class="form-control" id="moDescription" placeholder="Например: замена масла и фильтра" required></div>
+                        <div class="col-6"><label class="form-label">Стоимость ($)</label><input type="number" step="0.01" class="form-control" id="moCost" value="0"></div>
+                        <div class="col-6"></div>
+                        <div class="col-6"><label class="form-label">Следующее ТО при пробеге</label><input type="number" class="form-control" id="moNextOdometer"></div>
+                        <div class="col-6"><label class="form-label">Следующее ТО до даты</label><input type="date" class="form-control" id="moNextDate"></div>
+                    </div>
+                    <div id="maintenanceFormError" class="alert alert-danger mt-3" style="display:none;"></div>
+                    <button type="submit" class="btn btn-purple w-100 mt-3">Добавить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="border-top mt-5 py-4 text-center text-secondary small">© 2025 AutoGO</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="nav.js"></script>
+<script src="garage.js"></script>
+</body>
+</html>
