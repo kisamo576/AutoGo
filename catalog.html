@@ -151,7 +151,6 @@
 <script src="nav.js"></script>
 <script src="cars.js"></script>
 <script>
-    // ---------- ПОЛУЧЕНИЕ ПАРАМЕТРОВ ИЗ URL (ОДИНОЧНЫЕ ЗНАЧЕНИЯ) ----------
     const urlParams = new URLSearchParams(window.location.search);
     
     const filters = {
@@ -165,7 +164,6 @@
         volTo: urlParams.get('volTo') ? parseFloat(urlParams.get('volTo')) : Infinity
     };
     
-    // ---------- ФИЛЬТРАЦИЯ МАШИН ----------
     function getFilteredCars() {
         return carsDatabase.filter(car => {
             if (filters.brand && car.brand !== filters.brand) return false;
@@ -178,7 +176,6 @@
         });
     }
     
-    // ---------- ОТОБРАЖЕНИЕ АКТИВНЫХ ФИЛЬТРОВ ----------
     function displayActiveFilters() {
         const container = document.getElementById('activeFiltersContainer');
         const resetBtn = document.getElementById('resetFilterBtn');
@@ -222,7 +219,6 @@
     }
     window.resetFiltersAndReload = resetFiltersAndReload;
     
-    // ---------- ГЕНЕРАЦИЯ СЛУЧАЙНОГО НОМЕРА ТЕЛЕФОНА ----------
     function getRandomPhone() {
         const numbers = ['29', '33', '44', '25'];
         const operator = numbers[Math.floor(Math.random() * numbers.length)];
@@ -230,13 +226,12 @@
         return `+375 ${operator} ${num.slice(0,3)} ${num.slice(3,5)} ${num.slice(5,7)}`;
     }
     
-    // ---------- РЕНДЕР КАРТОЧКИ ----------
     function renderCarCard(car) {
         const onerror = `this.style.display='none'`;
         const phone = getRandomPhone();
         const isPremium = car.isPremium === true;
         const premiumClass = isPremium ? 'premium-seller' : '';
-        const premiumBadge = isPremium ? '<span class="premium-seller-badge">⭐ Премиум продавец</span>' : '';
+        const premiumBadge = isPremium ? '<span class="premium-seller-badge"><i class="bi bi-star-fill"></i> Премиум продавец</span>' : '';
         
         return `
             <div class="car-card-horizontal row g-0 ${premiumClass}">
@@ -285,7 +280,6 @@
         `;
     }
     
-    // ---------- ПАГИНАЦИЯ ----------
     let currentPage = 1;
     const perPage = 10;
     

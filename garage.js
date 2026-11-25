@@ -1,10 +1,8 @@
-// garage.js — логика страницы "Мой гараж": карточки авто, трекер заправок/зарядок, журнал ТО
-
 const FUEL_TYPE_LABELS = { petrol: 'Бензин', diesel: 'Дизель', electric: 'Электро', hybrid: 'Гибрид' };
 
 let cars = [];
 let activeCarId = null;
-let activeTab = 'info'; // info | fuel | maintenance
+let activeTab = 'info';
 
 const root = document.getElementById('garageRoot');
 
@@ -55,7 +53,7 @@ function render() {
 
   root.innerHTML = `
     <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
-      <h2 class="mb-0">🚗 Мой гараж</h2>
+      <h2 class="mb-0"><i class="bi bi-car-front"></i> Мой гараж</h2>
       <button class="btn btn-purple" id="addCarBtn"><i class="bi bi-plus-circle"></i> Добавить автомобиль</button>
     </div>
     <div class="row g-3 mb-4">${carsGridHtml || '<div class="col-12"><div class="autogo-page-card autogo-empty-state">Пока нет ни одного автомобиля. Добавьте первый, чтобы вести трекер заправок и ТО.</div></div>'}</div>
@@ -79,8 +77,8 @@ function renderDetail() {
     <div class="autogo-page-card">
       <div class="autogo-tab-btns mb-3">
         <button class="btn btn-sm ${activeTab === 'info' ? 'btn-purple' : 'btn-outline-purple'}" data-tab="info">Характеристики</button>
-        <button class="btn btn-sm ${activeTab === 'fuel' ? 'btn-purple' : 'btn-outline-purple'}" data-tab="fuel">⛽ Заправки/зарядки</button>
-        <button class="btn btn-sm ${activeTab === 'maintenance' ? 'btn-purple' : 'btn-outline-purple'}" data-tab="maintenance">🔧 ТО</button>
+        <button class="btn btn-sm ${activeTab === 'fuel' ? 'btn-purple' : 'btn-outline-purple'}" data-tab="fuel"><i class="bi bi-fuel-pump"></i> Заправки/зарядки</button>
+        <button class="btn btn-sm ${activeTab === 'maintenance' ? 'btn-purple' : 'btn-outline-purple'}" data-tab="maintenance"><i class="bi bi-wrench-adjustable"></i> ТО</button>
       </div>
       <div id="carDetailContent"></div>
     </div>
@@ -120,7 +118,6 @@ function renderInfoTab(content, car) {
   document.getElementById('deleteCarBtn').addEventListener('click', () => deleteCar(car));
 }
 
-// ---------- Трекер заправок/зарядок ----------
 async function renderFuelTab(content, car) {
   content.innerHTML = `<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-purple"></div></div>`;
   try {
@@ -140,7 +137,7 @@ async function renderFuelTab(content, car) {
     const rowsHtml = logs.map(l => `
       <tr>
         <td>${l.log_date}</td>
-        <td>${l.entry_type === 'fuel' ? '⛽ Заправка' : '🔌 Зарядка'}</td>
+        <td>${l.entry_type === 'fuel' ? 'Заправка' : 'Зарядка'}</td>
         <td>${l.amount}</td>
         <td>${l.cost} $</td>
         <td>${l.odometer.toLocaleString()} км</td>
@@ -273,7 +270,6 @@ function openMaintenanceModal(car) {
   new bootstrap.Modal(document.getElementById('maintenanceFormModal')).show();
 }
 
-// ---------- Журнал ТО ----------
 async function renderMaintenanceTab(content, car) {
   content.innerHTML = `<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-purple"></div></div>`;
   try {
@@ -331,7 +327,6 @@ async function renderMaintenanceTab(content, car) {
   }
 }
 
-// ---------- Форма машины ----------
 function openAddCarModal() {
   document.getElementById('carFormModalTitle').textContent = 'Добавить автомобиль';
   document.getElementById('carForm').reset();
@@ -363,7 +358,6 @@ async function deleteCar(car) {
   await loadCars();
 }
 
-// ---------- Инициализация ----------
 window.AutoGoAuth.ready.then((user) => {
   if (!user) { renderLoggedOut(); return; }
   loadCars().catch(err => { root.innerHTML = `<div class="alert alert-danger">${esc(err.message)}</div>`; });

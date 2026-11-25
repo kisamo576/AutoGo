@@ -81,12 +81,11 @@
     <div class="premium-page-card">
         <div class="p-4 p-lg-5">
             <div class="text-center mb-4">
-                <h1 class="fw-bold">⭐ Премиум доступ</h1>
+                <h1 class="fw-bold"><i class="bi bi-star-fill"></i> Премиум доступ</h1>
                 <p class="text-secondary">Продавайте автомобили быстрее с расширенными возможностями</p>
             </div>
             
             <div class="row g-4 mt-2">
-                <!-- СТАНДАРТ (бесплатно) -->
                 <div class="col-md-6">
                     <div class="price-card">
                         <h3 class="fw-bold mb-2">Стандарт</h3>
@@ -107,10 +106,9 @@
                     </div>
                 </div>
                 
-                <!-- ПРЕМИУМ (платный) -->
                 <div class="col-md-6">
                     <div class="price-card premium">
-                        <div class="badge bg-warning text-dark mb-2">⭐ РЕКОМЕНДУЕМ</div>
+                        <div class="badge bg-warning text-dark mb-2">РЕКОМЕНДУЕМ</div>
                         <h3 class="fw-bold mb-2">Премиум</h3>
                         <div class="price">49 $</div>
                         <p class="text-secondary small">в месяц / без автопродления</p>
@@ -120,7 +118,7 @@
                             <li><i class="bi bi-check-lg"></i> Фото до 20 штук + видео</li>
                             <li><i class="bi bi-check-lg"></i> Выделение объявления цветом</li>
                             <li><i class="bi bi-check-lg"></i> Поднятие в поиске каждые 3 дня</li>
-                            <li><i class="bi bi-check-lg"></i> Значок «⭐ Премиум продавец»</li>
+                            <li><i class="bi bi-check-lg"></i> Значок «Премиум продавец»</li>
                             <li><i class="bi bi-check-lg"></i> Приоритетная поддержка 24/7</li>
                             <li><i class="bi bi-check-lg"></i> Статистика просмотров</li>
                             <li><i class="bi bi-check-lg"></i> Возврат до 50% при быстрой продаже</li>
@@ -132,7 +130,6 @@
                 </div>
             </div>
             
-            <!-- Дополнительная информация -->
             <div class="row mt-4">
                 <div class="col-12">
                     <div class="bg-dark rounded-4 p-3 text-center">
@@ -148,7 +145,6 @@
     </div>
 </main>
 
-<!-- Модальное окно для успешной оплаты (красивое) -->
 <div class="modal fade" id="premiumSuccessModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-white border-success">
@@ -178,7 +174,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="nav.js"></script>
 <script>
-    // Кнопка "Купить премиум" открывает красивое модальное окно
     document.getElementById('buyPremiumBtn').addEventListener('click', function() {
         const modal = new bootstrap.Modal(document.getElementById('premiumSuccessModal'));
         modal.show();

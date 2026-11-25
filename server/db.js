@@ -1,4 +1,3 @@
-// db.js — инициализация встроенной SQLite (node:sqlite), схема и сидирование начальных данных
 const { DatabaseSync } = require('node:sqlite');
 const path = require('node:path');
 const fs = require('node:fs');
@@ -18,7 +17,7 @@ db.exec(`
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     name TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'user', -- 'user' | 'admin'
+    role TEXT NOT NULL DEFAULT 'user',
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
@@ -30,7 +29,7 @@ db.exec(`
     year INTEGER,
     vin TEXT,
     plate_number TEXT,
-    fuel_type TEXT NOT NULL DEFAULT 'petrol', -- petrol | diesel | electric | hybrid
+    fuel_type TEXT NOT NULL DEFAULT 'petrol',
     engine_volume REAL,
     odometer INTEGER NOT NULL DEFAULT 0,
     photo_url TEXT,
@@ -41,9 +40,9 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS fuel_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     car_id INTEGER NOT NULL REFERENCES garage_cars(id) ON DELETE CASCADE,
-    entry_type TEXT NOT NULL, -- 'fuel' | 'charge'
+    entry_type TEXT NOT NULL,
     log_date TEXT NOT NULL,
-    amount REAL NOT NULL,       -- литры для fuel, кВт·ч для charge
+    amount REAL NOT NULL,
     cost REAL NOT NULL,
     odometer INTEGER NOT NULL,
     station TEXT,
@@ -94,7 +93,7 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     brand TEXT NOT NULL,
     model TEXT,
-    category TEXT NOT NULL, -- 'regulation' | 'manual' | 'diagram'
+    category TEXT NOT NULL,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     created_by INTEGER REFERENCES users(id),

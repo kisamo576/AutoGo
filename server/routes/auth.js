@@ -1,4 +1,3 @@
-// auth.js — регистрация, вход, выход, текущий пользователь
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const db = require('../db');

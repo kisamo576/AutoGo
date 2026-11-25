@@ -1,4 +1,3 @@
-// cars.js – база данных автомобилей (100 штук) с РЕАЛИСТИЧНЫМИ характеристиками
 
 const carsDatabase = [];
 
@@ -7,7 +6,6 @@ const brands = [
     "Kia", "Volkswagen", "Volvo", "Lexus", "Porsche"
 ];
 
-// Модели + реалистичные параметры для каждой марки
 const modelsData = {
     "BMW": [
         { model: "X5", engine: "3.0", priceNew: 75000, priceUsed: 45000, bodyType: "Внедорожник / SUV", drive: "Полный (4WD/AWD)" },
@@ -131,7 +129,6 @@ const modelsData = {
     ]
 };
 
-// Опции для авто
 function getOptions(brand, price, isPremiumModel) {
     let opts = ['Подогрев сидений', 'Климат-контроль', 'Парктроник', 'Камера заднего вида'];
     if (price > 40000) opts.push('Кожаный салон', 'Люк');
@@ -142,7 +139,6 @@ function getOptions(brand, price, isPremiumModel) {
     return opts.slice(0, 8);
 }
 
-// Цвета
 const colorOptions = ['Чёрный', 'Белый', 'Серебристый', 'Красный', 'Синий', 'Серый'];
 
 let id = 1;
@@ -151,11 +147,9 @@ for (const brand of brands) {
     for (let i = 0; i < models.length; i++) {
         const data = models[i];
         const year = 2018 + Math.floor(Math.random() * 7); // 2018-2024
-        // Цена зависит от года (чем новее, тем дороже)
         const yearFactor = (year - 2018) * 1500;
         let price = data.priceNew - yearFactor;
         price = Math.max(price, data.priceUsed);
-        // Пробег
         const mileage = (20000 + Math.floor(Math.random() * 100000)).toLocaleString();
         const color = colorOptions[id % colorOptions.length];
         const condition = year >= 2022 ? 'Новый' : 'С пробегом';

@@ -1,15 +1,12 @@
-// healthcheck.js — быстрая проверка, что запущенный сервер AutoGO отвечает и ключевые разделы работают.
-// Использование: npm run healthcheck (сервер должен быть уже запущен, например через npm start)
-
 const BASE_URL = process.env.AUTOGO_URL || `http://localhost:${process.env.PORT || 3000}`;
 
 async function check(name, fn) {
   try {
     await fn();
-    console.log(`✔ ${name}`);
+    console.log(`OK   ${name}`);
     return true;
   } catch (err) {
-    console.log(`✖ ${name}: ${err.message}`);
+    console.log(`FAIL ${name}: ${err.message}`);
     return false;
   }
 }

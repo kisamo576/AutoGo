@@ -1,4 +1,3 @@
-// garage.js — машины пользователя, трекер заправок/зарядок, журнал ТО
 const express = require('express');
 const db = require('../db');
 const { requireAuth } = require('../middleware/auth');
@@ -6,7 +5,6 @@ const { requireAuth } = require('../middleware/auth');
 const router = express.Router();
 router.use(requireAuth);
 
-// Загружает авто и проверяет, что оно принадлежит текущему пользователю
 function loadOwnCar(req, res, next) {
   const car = db.prepare('SELECT * FROM garage_cars WHERE id = ?').get(req.params.carId);
   if (!car) return res.status(404).json({ error: 'Автомобиль не найден' });
@@ -15,7 +13,6 @@ function loadOwnCar(req, res, next) {
   next();
 }
 
-// ---------- Машины в гараже ----------
 router.get('/', (req, res) => {
   const cars = db.prepare('SELECT * FROM garage_cars WHERE user_id = ? ORDER BY created_at DESC').all(req.user.id);
   res.json({ cars });
@@ -59,7 +56,6 @@ router.delete('/:carId', loadOwnCar, (req, res) => {
   res.json({ ok: true });
 });
 
-// ---------- Трекер заправок/зарядок ----------
 router.get('/:carId/fuel-logs', loadOwnCar, (req, res) => {
   const logs = db.prepare('SELECT * FROM fuel_logs WHERE car_id = ? ORDER BY log_date DESC, id DESC').all(req.car.id);
   res.json({ logs });
@@ -89,7 +85,6 @@ router.delete('/:carId/fuel-logs/:logId', loadOwnCar, (req, res) => {
   res.json({ ok: true });
 });
 
-// Статистика: расход, затраты, пробег между заправками
 router.get('/:carId/fuel-stats', loadOwnCar, (req, res) => {
   const logs = db.prepare('SELECT * FROM fuel_logs WHERE car_id = ? ORDER BY odometer ASC, log_date ASC').all(req.car.id);
 
@@ -132,7 +127,6 @@ router.get('/:carId/fuel-stats', loadOwnCar, (req, res) => {
   });
 });
 
-// ---------- Журнал ТО ----------
 router.get('/:carId/maintenance', loadOwnCar, (req, res) => {
   const logs = db.prepare('SELECT * FROM maintenance_logs WHERE car_id = ? ORDER BY log_date DESC, id DESC').all(req.car.id);
   res.json({ logs });
@@ -162,7 +156,6 @@ router.delete('/:carId/maintenance/:logId', loadOwnCar, (req, res) => {
   res.json({ ok: true });
 });
 
-// Ближайшее ТО: по пробегу и по дате
 router.get('/:carId/maintenance-reminders', loadOwnCar, (req, res) => {
   const logs = db.prepare(`SELECT * FROM maintenance_logs WHERE car_id = ?
     AND (next_due_odometer IS NOT NULL OR next_due_date IS NOT NULL)

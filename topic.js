@@ -1,5 +1,3 @@
-// topic.js — просмотр темы форума, ответы, базовая модерация (удаление сообщений, закрытие темы)
-
 const topicId = new URLSearchParams(window.location.search).get('id');
 const root = document.getElementById('topicRoot');
 
@@ -37,7 +35,7 @@ async function load() {
       <div class="autogo-page-card mb-3">
         <div class="d-flex justify-content-between align-items-start flex-wrap">
           <div>
-            <h3>${topic.is_pinned ? '📌 ' : ''}${esc(topic.title)}</h3>
+            <h3>${topic.is_pinned ? '<i class="bi bi-pin-angle-fill"></i> ' : ''}${esc(topic.title)}</h3>
             <div class="text-secondary small">${esc(topic.category_name)} · автор ${esc(topic.author_name)}</div>
           </div>
           ${isAdmin ? `

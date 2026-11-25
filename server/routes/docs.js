@@ -1,4 +1,3 @@
-// docs.js — техническая документация: регламенты, мануалы, схемы
 const express = require('express');
 const db = require('../db');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
@@ -29,7 +28,6 @@ router.get('/:id', (req, res) => {
   res.json({ doc });
 });
 
-// Добавление/удаление документации — только администратор (контент должен быть проверенным)
 router.post('/', requireAuth, requireAdmin, (req, res) => {
   const { brand, model, category, title, content } = req.body || {};
   if (!brand || !category || !title || !content) {

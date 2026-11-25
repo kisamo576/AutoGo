@@ -1,4 +1,3 @@
-// auth.js — чтение JWT из httpOnly-куки и подстановка req.user
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_change_me';
@@ -10,7 +9,6 @@ function signToken(user) {
   });
 }
 
-// Пропускает запрос дальше независимо от наличия токена, но заполняет req.user, если токен валиден
 function attachUser(req, res, next) {
   const token = req.cookies ? req.cookies[COOKIE_NAME] : null;
   if (token) {
@@ -25,13 +23,11 @@ function attachUser(req, res, next) {
   next();
 }
 
-// Требует авторизации
 function requireAuth(req, res, next) {
   if (!req.user) return res.status(401).json({ error: 'Требуется авторизация' });
   next();
 }
 
-// Требует роль admin
 function requireAdmin(req, res, next) {
   if (!req.user || req.user.role !== 'admin') return res.status(403).json({ error: 'Требуются права администратора' });
   next();

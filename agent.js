@@ -1,5 +1,3 @@
-// agent.js — UI ИИ-агента поиска по форумам
-
 function esc(str) {
   const div = document.createElement('div');
   div.textContent = str == null ? '' : String(str);

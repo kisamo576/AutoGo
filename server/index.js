@@ -1,4 +1,3 @@
-// index.js — точка входа Express-приложения AutoGO
 require('dotenv').config();
 
 const path = require('node:path');
@@ -28,7 +27,6 @@ app.use('/api/forum', forumRoutes);
 app.use('/api/docs', docsRoutes);
 app.use('/api/agent', agentRoutes);
 
-// Серверные/служебные каталоги не должны быть доступны как статика
 const BLOCKED_PREFIXES = ['/server', '/data', '/node_modules', '/tests', '/scripts', '/team-instructions', '/.env'];
 app.use((req, res, next) => {
   if (BLOCKED_PREFIXES.some(p => req.path === p || req.path.startsWith(p + '/'))) {

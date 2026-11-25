@@ -1,4 +1,3 @@
-// forum.js — категории, темы, сообщения, базовая модерация
 const express = require('express');
 const db = require('../db');
 const { requireAuth } = require('../middleware/auth');
@@ -87,7 +86,6 @@ router.post('/topics/:id/posts', requireAuth, (req, res) => {
   res.status(201).json({ post });
 });
 
-// Модерация: удалить сообщение (автор или админ)
 router.delete('/posts/:id', requireAuth, (req, res) => {
   const post = db.prepare('SELECT * FROM forum_posts WHERE id = ?').get(req.params.id);
   if (!post) return res.status(404).json({ error: 'Сообщение не найдено' });
@@ -98,7 +96,6 @@ router.delete('/posts/:id', requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
-// Модерация: закрыть/открыть тему (только админ)
 router.post('/topics/:id/lock', requireAuth, (req, res) => {
   if (req.user.role !== 'admin') return res.status(403).json({ error: 'Недостаточно прав' });
   const topic = db.prepare('SELECT * FROM forum_topics WHERE id = ?').get(req.params.id);
@@ -108,7 +105,6 @@ router.post('/topics/:id/lock', requireAuth, (req, res) => {
   res.json({ ok: true, is_locked: newState });
 });
 
-// Модерация: удалить тему (только админ)
 router.delete('/topics/:id', requireAuth, (req, res) => {
   if (req.user.role !== 'admin') return res.status(403).json({ error: 'Недостаточно прав' });
   const topic = db.prepare('SELECT * FROM forum_topics WHERE id = ?').get(req.params.id);

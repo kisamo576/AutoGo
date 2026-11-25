@@ -1,4 +1,3 @@
-// agent.js — ИИ-агент поиска информации на сторонних форумах
 const express = require('express');
 const db = require('../db');
 const { requireAuth } = require('../middleware/auth');

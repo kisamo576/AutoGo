@@ -1,5 +1,3 @@
-// docs.js — список и просмотр технической документации (регламенты, мануалы, схемы)
-
 const CATEGORY_LABELS = { regulation: 'Регламент ТО', manual: 'Мануал', diagram: 'Схема' };
 
 function esc(str) {
@@ -15,7 +13,6 @@ async function api(url) {
   return data;
 }
 
-// Минимальный рендер markdown-подобного текста без внешних зависимостей
 function renderMarkdown(text) {
   const lines = esc(text).split('\n');
   let html = '';

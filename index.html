@@ -56,17 +56,17 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Помощь</a>
                         <ul class="dropdown-menu dropdown-menu-dark">
-                            <li><a class="dropdown-item" href="#" onclick="alert('Часто задаваемые вопросы'); return false;">📖 Часто задаваемые вопросы</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="alert('Написать в поддержку'); return false;">✉️ Написать в поддержку</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="alert('Правила площадки'); return false;">📜 Правила площадки</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="alert('Часто задаваемые вопросы'); return false;"><i class="bi bi-question-circle"></i> Часто задаваемые вопросы</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="alert('Написать в поддержку'); return false;"><i class="bi bi-envelope"></i> Написать в поддержку</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="alert('Правила площадки'); return false;"><i class="bi bi-file-text"></i> Правила площадки</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" onclick="alert('Пожаловаться на объявление'); return false;">⚠️ Пожаловаться</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="alert('Пожаловаться на объявление'); return false;"><i class="bi bi-exclamation-triangle"></i> Пожаловаться</a></li>
                         </ul>
                     </li>
                     <li class="nav-item"><span class="nav-divider mx-2"></span></li>
                     <li class="nav-item"><button class="btn btn-danger-custom btn-sm" onclick="window.location.href='add_ad.html'">Подать объявление</button></li>
                     <li class="nav-item"><span class="nav-divider mx-2"></span></li>
-                    <li class="nav-item"><button class="btn btn-warning btn-sm text-dark fw-bold" onclick="window.location.href='premium.html'">⭐ Купить премиум</button></li>
+                    <li class="nav-item"><button class="btn btn-warning btn-sm text-dark fw-bold" onclick="window.location.href='premium.html'"><i class="bi bi-star-fill"></i> Купить премиум</button></li>
                 </ul>
             </div>
         </div>
@@ -76,7 +76,7 @@
 <main class="container my-4">
     <div class="filters-card">
         <div class="d-flex justify-content-between align-items-center flex-wrap">
-            <h5 class="mb-3 fw-bold">🔍 Поиск авто с пробегом</h5>
+            <h5 class="mb-3 fw-bold"><i class="bi bi-search"></i> Поиск авто с пробегом</h5>
             <a href="#" class="text-secondary small" data-bs-toggle="modal" data-bs-target="#allParamsModal">Все параметры →</a>
         </div>
         <div class="row g-3">
@@ -121,7 +121,7 @@
 
     <div class="premium-block premium-carousel">
         <div class="d-flex justify-content-between align-items-center flex-wrap">
-            <h2 class="premium-title">⭐ Премиум объявления</h2>
+            <h2 class="premium-title"><i class="bi bi-star-fill"></i> Премиум объявления</h2>
             <a href="catalog.html" class="btn btn-warning btn-sm fw-bold">Показать больше →</a>
         </div>
         <div id="premiumCarousel" class="carousel slide mt-3" data-bs-ride="carousel" data-bs-interval="4000">
@@ -136,7 +136,7 @@
     </div>
 
     <div class="latest-wrapper">
-        <h2 class="section-title">🔄 Последние добавленные</h2>
+        <h2 class="section-title"><i class="bi bi-clock-history"></i> Последние добавленные</h2>
         <div class="row g-4" id="latestAds"></div>
         <div class="text-center mt-4">
             <a href="catalog.html" class="btn btn-show-all px-4">Показать все →</a>
@@ -147,7 +147,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content bg-dark text-white border-secondary">
                 <div class="modal-header border-secondary">
-                    <h5 class="modal-title">🔧 Все параметры поиска</h5>
+                    <h5 class="modal-title"><i class="bi bi-sliders"></i> Все параметры поиска</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">

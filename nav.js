@@ -1,21 +1,16 @@
-// nav.js — общее подменю разделов и авторизация, подключается на всех страницах.
-// Добавляет под шапкой строку ссылок (Гараж/Форум/Документация/Помощник) и область
-// авторизации, а также даёт другим скриптам доступ к текущему пользователю через
-// window.AutoGoAuth.
-
 (function () {
   const LINKS = [
-    { href: 'garage.html', label: '🚗 Гараж' },
-    { href: 'forum.html', label: '💬 Форум' },
-    { href: 'docs.html', label: '📘 Документация' },
-    { href: 'agent.html', label: '🤖 Помощник' }
+    { href: 'garage.html', label: '<i class="bi bi-car-front"></i> Гараж' },
+    { href: 'forum.html', label: '<i class="bi bi-chat-dots"></i> Форум' },
+    { href: 'docs.html', label: '<i class="bi bi-journal-text"></i> Документация' },
+    { href: 'agent.html', label: '<i class="bi bi-search"></i> Помощник' }
   ];
 
   const LOGIN_MODAL_HTML = `
     <div class="modal fade" id="loginModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-white border-secondary">
-          <div class="modal-header border-secondary"><h5 class="modal-title">🔐 Вход</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+          <div class="modal-header border-secondary"><h5 class="modal-title">Вход</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
           <div class="modal-body">
             <form id="loginForm">
               <div class="mb-3"><label class="form-label">Email</label><input type="email" id="loginEmail" class="form-control" placeholder="user@autogo.local" required></div>
@@ -34,7 +29,7 @@
     <div class="modal fade" id="registerModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-white border-secondary">
-          <div class="modal-header border-secondary"><h5 class="modal-title">📝 Регистрация</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+          <div class="modal-header border-secondary"><h5 class="modal-title">Регистрация</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
           <div class="modal-body">
             <form id="registerForm">
               <div class="mb-3"><label class="form-label">Имя</label><input type="text" id="registerName" class="form-control" placeholder="Как вас называть" required></div>
@@ -53,6 +48,12 @@
   function ensureAuthModals() {
     if (!document.getElementById('loginModal')) document.body.insertAdjacentHTML('beforeend', LOGIN_MODAL_HTML);
     if (!document.getElementById('registerModal')) document.body.insertAdjacentHTML('beforeend', REGISTER_MODAL_HTML);
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
   }
 
   function buildSubnav(user) {
@@ -79,12 +80,6 @@
     bar.className = 'autogo-subnav';
     bar.innerHTML = `<div class="container"><div class="autogo-subnav-links">${linksHtml}</div>${authHtml}</div>`;
     return bar;
-  }
-
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str == null ? '' : String(str);
-    return div.innerHTML;
   }
 
   function wireAuthForms(onAuthChange) {

@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Дополнительные стили для личного кабинета */
         .btn-danger-custom {
             background: #DC2626;
             box-shadow: 0 2px 8px rgba(220,38,38,0.4);
@@ -48,15 +47,14 @@
     <div class="row">
         <div class="col-md-3">
             <div class="list-group">
-                <button class="list-group-item list-group-item-action active" data-tab="myAds">📋 Мои объявления</button>
-                <a href="garage.html" class="list-group-item list-group-item-action">🚗 Мой гараж</a>
+                <button class="list-group-item list-group-item-action active" data-tab="myAds"><i class="bi bi-card-list"></i> Мои объявления</button>
+                <a href="garage.html" class="list-group-item list-group-item-action"><i class="bi bi-car-front"></i> Мой гараж</a>
                 <button class="list-group-item list-group-item-action" data-tab="favorites">❤️ Избранное</button>
                 <button class="list-group-item list-group-item-action" data-tab="settings">⚙️ Настройки профиля</button>
-                <button class="list-group-item list-group-item-action" data-tab="premium">⭐ Купить премиум</button>
+                <button class="list-group-item list-group-item-action" data-tab="premium"><i class="bi bi-star-fill"></i> Купить премиум</button>
             </div>
         </div>
         <div class="col-md-9">
-            <!-- Мои объявления -->
             <div id="myAdsTab" class="tab-content-card">
                 <div class="bg-dark p-4 rounded-4">
                     <h3 class="fw-bold mb-3">Мои объявления</h3>
@@ -67,14 +65,13 @@
                 </div>
             </div>
             
-            <!-- Избранное (заглушка) -->
             <div id="favoritesTab" class="tab-content-card" style="display:none;">
                 <div class="bg-dark p-4 rounded-4">
                     <div class="text-center py-4">
                         <i class="bi bi-heart text-secondary" style="font-size: 3rem;"></i>
                         <h3 class="fw-bold mt-3">Избранное</h3>
                         <p class="text-secondary">Здесь будут отображаться автомобили, которые вы добавили в избранное.</p>
-                        <p class="text-secondary small">★ Нажмите на сердечко на карточке автомобиля, чтобы добавить его в избранное.</p>
+                        <p class="text-secondary small">Нажмите на сердечко на карточке автомобиля, чтобы добавить его в избранное.</p>
                         <button class="btn btn-outline-purple mt-2" onclick="alert('Функция в разработке. В ближайшее время здесь появятся сохранённые автомобили.')">
                             <i class="bi bi-arrow-repeat"></i> Обновить
                         </button>
@@ -82,7 +79,6 @@
                 </div>
             </div>
             
-            <!-- Настройки профиля -->
             <div id="settingsTab" class="tab-content-card" style="display:none;">
                 <div class="bg-dark p-4 rounded-4">
                     <h3 class="fw-bold mb-3">Настройки профиля</h3>
@@ -110,11 +106,10 @@
                 </div>
             </div>
             
-            <!-- Премиум доступ -->
             <div id="premiumTab" class="tab-content-card" style="display:none;">
                 <div class="bg-dark p-4 rounded-4 text-center">
                     <i class="bi bi-star-fill text-warning" style="font-size: 3rem;"></i>
-                    <h3 class="fw-bold mt-2">⭐ Премиум доступ</h3>
+                    <h3 class="fw-bold mt-2"><i class="bi bi-star-fill"></i> Премиум доступ</h3>
                     <p class="text-secondary">Выделите свои объявления, поднимитесь в поиске, получите значок «Премиум продавец».</p>
                     <div class="row mt-3 mb-3">
                         <div class="col-md-6 offset-md-3">
@@ -138,7 +133,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="nav.js"></script>
 <script>
-    // Переключение вкладок в личном кабинете
     const tabs = {
         myAds: document.getElementById('myAdsTab'),
         favorites: document.getElementById('favoritesTab'),

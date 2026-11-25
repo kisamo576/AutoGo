@@ -1,5 +1,3 @@
-// forum.js — список категорий и тем форума
-
 let categories = [];
 let activeCategorySlug = '';
 

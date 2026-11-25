@@ -1,4 +1,3 @@
-// script.js – вся логика AutoGO
 
 const brandSelect = document.getElementById('brandSelect');
 const modelSelect = document.getElementById('modelSelect');
@@ -76,7 +75,7 @@ function createStaticCard(car, isPremium = false) {
                     <div class="price">$${car.price.toLocaleString()}</div>
                     <div class="fw-bold">${car.brand} ${car.model}</div>
                     <div class="small text-secondary">${car.year} • ${car.engine} л • ${car.mileage} км</div>
-                    ${isPremium ? '<span class="premium-badge">⭐ Премиум продавец</span>' : ''}
+                    ${isPremium ? '<span class="premium-badge"><i class="bi bi-star-fill"></i> Премиум продавец</span>' : ''}
                     <hr class="border-secondary">
                     <div class="d-flex justify-content-between">
                         <a href="ad.html?id=${car.id}" class="btn btn-outline-purple btn-sm">Подробнее</a>
@@ -139,7 +138,6 @@ document.getElementById('resetBtn')?.addEventListener('click', () => {
     if (volTo) volTo.value = '';
 });
 
-// Логин/регистрация реализованы централизованно в nav.js (реальные вызовы API)
 
 const allParamsModal = document.getElementById('allParamsModal');
 if (allParamsModal) {

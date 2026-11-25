@@ -1,11 +1,9 @@
-// api.test.js — базовые проверки работоспособности API (healthcheck + ключевые сценарии)
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const fs = require('node:fs');
 const os = require('node:os');
 
-// Тесты работают на отдельной временной БД, чтобы не трогать рабочие данные разработчика
 const tmpDbPath = path.join(os.tmpdir(), `autogo-test-${Date.now()}.db`);
 process.env.AUTOGO_DB_PATH = tmpDbPath;
 process.env.JWT_SECRET = 'test_secret';

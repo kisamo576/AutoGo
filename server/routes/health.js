@@ -1,4 +1,3 @@
-// health.js — проверка живости сервера и БД
 const express = require('express');
 const db = require('../db');
 
