@@ -73,7 +73,11 @@
             const card = template.content.cloneNode(true);
             const link = card.querySelector('[data-car-link]');
             link.textContent = car.brand + ' ' + car.model;
-            link.href = 'ad.html?id=' + car.id;
+            if (hiddenListingIds.has(car.id)) {
+                link.replaceWith(document.createTextNode(link.textContent + ' · объявление скрыто'));
+            } else {
+                link.href = 'ad.html?id=' + car.id;
+            }
             card.querySelector('[data-car-specs]').textContent =
                 '$' + car.price.toLocaleString() + ' · ' + car.year + ' г. · ' + car.mileage + ' км';
             const image = card.querySelector('img');

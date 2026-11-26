@@ -43,6 +43,7 @@
                 <button class="list-group-item list-group-item-action active" data-tab="myAds"><i class="bi bi-card-list"></i> Мои объявления</button>
                 <a href="garage.html" class="list-group-item list-group-item-action"><i class="bi bi-car-front"></i> Мой гараж</a>
                 <button class="list-group-item list-group-item-action" data-tab="favorites">❤️ Избранное</button>
+                <button class="list-group-item list-group-item-action" data-tab="myReports"><i class="bi bi-flag"></i> Мои жалобы</button>
                 <button class="list-group-item list-group-item-action" data-tab="settings">⚙️ Настройки профиля</button>
                 <button class="list-group-item list-group-item-action" data-tab="premium"><i class="bi bi-star-fill"></i> Купить премиум</button>
             </div>
@@ -97,6 +98,16 @@
                 </template>
             </div>
 
+
+            <section id="myReportsTab" class="tab-content-card" style="display:none;" aria-labelledby="myReportsTitle">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <h3 id="myReportsTitle" class="h5 fw-bold mb-0">Мои жалобы</h3>
+                    <button id="refreshMyReports" type="button" class="btn btn-sm btn-outline-purple">Обновить</button>
+                </div>
+                <p id="myReportsMessage" class="text-secondary small" role="status"></p>
+                <div id="myReportsList" class="d-grid gap-3"></div>
+                <button id="moreMyReports" type="button" class="btn btn-sm btn-outline-purple mt-3" hidden>Показать ещё</button>
+            </section>
 
             <div id="settingsTab" class="tab-content-card" style="display:none;">
                 <div class="bg-dark p-4 rounded-4">
@@ -155,6 +166,7 @@
     const tabs = {
         myAds: document.getElementById('myAdsTab'),
         favorites: document.getElementById('favoritesTab'),
+        myReports: document.getElementById('myReportsTab'),
         settings: document.getElementById('settingsTab'),
         premium: document.getElementById('premiumTab')
     };
@@ -167,6 +179,7 @@
             });
             if (tab === 'myAds' && tabs.myAds) tabs.myAds.style.display = 'block';
             if (tab === 'favorites' && tabs.favorites) tabs.favorites.style.display = 'block';
+            if (tab === 'myReports' && tabs.myReports) tabs.myReports.style.display = 'block';
             if (tab === 'settings' && tabs.settings) tabs.settings.style.display = 'block';
             if (tab === 'premium' && tabs.premium) tabs.premium.style.display = 'block';
             
@@ -178,5 +191,7 @@
 </script>
 <script src="cars.js"></script>
 <script src="favorites.js"></script>
+<script src="report-options.js"></script>
+<script src="report-profile.js"></script>
 </body>
 </html>

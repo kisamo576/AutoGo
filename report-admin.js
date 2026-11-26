@@ -14,35 +14,89 @@
     }
     filter.value = 'pending';
 
-    function addAction(container, report, status, label) {
+    const dialog = document.getElementById('reviewReportDialog');
+    const form = document.getElementById('reviewReportForm');
+    const error = document.getElementById('reviewReportError');
+    const submit = form.querySelector('[type="submit"]');
+    let decision;
+
+    function openReview(report, status) {
+        decision = { report, status };
+        form.reset();
+        error.textContent = '';
+        const canHide = status === 'resolved' && !report.listing_hidden;
+        document.getElementById('reviewReportVisibility').hidden = !canHide;
+        form.elements.hide.disabled = !canHide;
+        document.getElementById('reviewReportTarget').textContent =
+            reportStatuses[status] + ' · объявление #' + report.ad_id;
+        dialog.showModal();
+    }
+
+    document.getElementById('reviewReportCancel').addEventListener('click', () => dialog.close());
+    dialog.addEventListener('cancel', event => { if (submit.disabled) event.preventDefault(); });
+
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const { report, status } = decision;
+        const reply = form.elements.reply.value.trim();
+        if (!reply) {
+            error.textContent = 'Напишите короткий ответ пользователю.';
+            return;
+        }
+        submit.disabled = true;
+        const cancel = document.getElementById('reviewReportCancel');
+        cancel.disabled = true;
+        error.textContent = '';
+        try {
+            const response = await fetch('/api/reports/' + report.id, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status, reply, hide: form.elements.hide.checked })
+            });
+            const data = await response.json();
+            if (response.status === 409) {
+                dialog.close();
+                await loadReports('Эту жалобу уже рассмотрели.');
+            } else if (!response.ok) {
+                error.textContent = data.error || 'Не удалось сохранить решение.';
+            } else {
+                dialog.close();
+                await loadReports('Ответ и решение сохранены.');
+            }
+        } catch {
+            error.textContent = 'Не удалось связаться с сервером.';
+        } finally {
+            submit.disabled = false;
+            cancel.disabled = false;
+        }
+    });
+
+    async function changeVisibility(report, button, hidden) {
+        const action = hidden ? 'Скрыть' : 'Вернуть в каталог';
+        if (!window.confirm(action + ' объявление #' + report.ad_id + '?')) return;
+        button.disabled = true;
+        try {
+            const response = await fetch('/api/reports/listings/' + report.ad_id + '/visibility', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ hidden })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Не удалось изменить видимость объявления.');
+            await loadReports(hidden ? 'Объявление скрыто.' : 'Объявление возвращено в каталог.');
+        } catch (cause) {
+            message.textContent = cause.message || 'Не удалось связаться с сервером.';
+        } finally {
+            button.disabled = false;
+        }
+    }
+
+    function addAction(container, label, action) {
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'btn btn-sm btn-outline-purple';
         button.textContent = label;
-        button.addEventListener('click', async () => {
-            const sequence = requestNumber;
-            const buttons = [...container.querySelectorAll('button')];
-            buttons.forEach(item => { item.disabled = true; });
-            try {
-                const response = await fetch('/api/reports/' + report.id, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status })
-                });
-                const data = await response.json();
-                if (response.status === 409) {
-                    await loadReports('Эту жалобу уже рассмотрели.');
-                } else if (!response.ok) {
-                    if (sequence === requestNumber) message.textContent = data.error || 'Не удалось сохранить решение.';
-                } else {
-                    await loadReports('Решение сохранено.');
-                }
-            } catch {
-                if (sequence === requestNumber) message.textContent = 'Не удалось связаться с сервером.';
-            } finally {
-                buttons.forEach(item => { item.disabled = false; });
-            }
-        });
+        button.addEventListener('click', () => action(button));
         container.appendChild(button);
     }
 
@@ -51,8 +105,8 @@
         for (const report of reports) {
             const row = rows.insertRow();
             const link = document.createElement('a');
-            link.href = 'ad.html?id=' + encodeURIComponent(report.ad_id);
-            link.textContent = '#' + report.ad_id;
+            if (!report.listing_hidden) link.href = 'ad.html?id=' + encodeURIComponent(report.ad_id);
+            link.textContent = '#' + report.ad_id + (report.listing_hidden ? ' · скрыто' : '');
             row.insertCell().appendChild(link);
 
             const reason = row.insertCell();
@@ -69,15 +123,27 @@
             time.dateTime = report.created_at.replace(' ', 'T') + 'Z';
             time.textContent = new Date(time.dateTime).toLocaleString('ru-RU');
             row.insertCell().appendChild(time);
-            row.insertCell().textContent = reportStatuses[report.status];
+            const state = row.insertCell();
+            state.textContent = reportStatuses[report.status];
+            if (report.reply) {
+                const reply = document.createElement('div');
+                reply.className = 'small text-secondary text-break';
+                reply.textContent = 'Ответ: ' + report.reply;
+                state.appendChild(reply);
+            }
             const actions = row.insertCell();
+            const buttons = document.createElement('div');
+            buttons.className = 'd-flex flex-wrap gap-2';
+            actions.appendChild(buttons);
             if (report.status === 'pending') {
-                const buttons = document.createElement('div');
-                buttons.className = 'd-flex flex-wrap gap-2';
-                actions.appendChild(buttons);
-                addAction(buttons, report, 'resolved', 'Подтвердить');
-                addAction(buttons, report, 'dismissed', 'Отклонить');
-            } else {
+                addAction(buttons, 'Подтвердить', () => openReview(report, 'resolved'));
+                addAction(buttons, 'Отклонить', () => openReview(report, 'dismissed'));
+            }
+            if (report.listing_hidden) {
+                addAction(buttons, 'Вернуть в каталог', button => changeVisibility(report, button, false));
+            } else if (report.status === 'resolved') {
+                addAction(buttons, 'Скрыть объявление', button => changeVisibility(report, button, true));
+            } else if (report.status !== 'pending') {
                 actions.textContent = '—';
             }
         }
@@ -126,5 +192,6 @@
     filter.addEventListener('change', () => { page = 1; loadReports(); });
     previous.addEventListener('click', () => { page--; loadReports(); });
     next.addEventListener('click', () => { page++; loadReports(); });
-    loadReports();
+    if (window.location.hash === '#reports') document.querySelector('[data-tab="reports"]').click();
+    else loadReports();
 })();

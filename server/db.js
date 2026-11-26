@@ -137,6 +137,13 @@ db.exec(`
   CREATE UNIQUE INDEX IF NOT EXISTS ad_reports_pending_user_ad
     ON ad_reports (user_id, ad_id) WHERE status = 'pending';
 
+
+  CREATE TABLE IF NOT EXISTS hidden_listings (
+    ad_id INTEGER PRIMARY KEY,
+    hidden_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    hidden_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
   CREATE TABLE IF NOT EXISTS agent_queries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -145,6 +152,10 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 `);
+
+if (!db.prepare('PRAGMA table_info(ad_reports)').all().some(column => column.name === 'reply')) {
+  db.exec("ALTER TABLE ad_reports ADD COLUMN reply TEXT NOT NULL DEFAULT ''");
+}
 
 function seed() {
   const userCount = db.prepare('SELECT COUNT(*) AS c FROM users').get().c;

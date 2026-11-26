@@ -8,7 +8,7 @@ const priceTo = document.getElementById('priceTo');
 const volFrom = document.getElementById('volFrom');
 const volTo = document.getElementById('volTo');
 
-const uniqueBrands = [...new Map(carsDatabase.map(car => [car.brand, car.brand])).values()];
+const uniqueBrands = [...new Map(visibleCars.map(car => [car.brand, car.brand])).values()];
 uniqueBrands.forEach(brand => {
     const option = document.createElement('option');
     option.value = brand;
@@ -31,7 +31,7 @@ function updateModels() {
     modelSelect.innerHTML = '<option value="">Любая модель</option>';
     modelSelect.disabled = !selectedBrand;
     if (!selectedBrand) return;
-    const models = [...new Map(carsDatabase.filter(car => car.brand === selectedBrand).map(car => [car.model, car.model])).values()];
+    const models = [...new Map(visibleCars.filter(car => car.brand === selectedBrand).map(car => [car.model, car.model])).values()];
     models.forEach(model => {
         const opt = document.createElement('option');
         opt.value = model;
@@ -87,7 +87,7 @@ function createStaticCard(car, isPremium = false) {
     `;
 }
 
-const premiumCars = carsDatabase.filter(c => c.isPremium).slice(0, 6);
+const premiumCars = visibleCars.filter(c => c.isPremium).slice(0, 6);
 const premiumCarouselInner = document.getElementById('premiumCarouselInner');
 if (premiumCarouselInner) {
     let slidesHtml = '';
@@ -100,7 +100,7 @@ if (premiumCarouselInner) {
     premiumCarouselInner.innerHTML = slidesHtml;
 }
 
-const latestCars = [...carsDatabase].reverse().slice(0, 6);
+const latestCars = [...visibleCars].reverse().slice(0, 6);
 const latestContainer = document.getElementById('latestAds');
 if (latestContainer) {
     latestCars.forEach(car => { latestContainer.innerHTML += createStaticCard(car, false); });
@@ -168,9 +168,9 @@ if (allParamsModal) {
         const brand = advBrandSelect ? advBrandSelect.value : '';
         if (advModelSelect) {
             advModelSelect.innerHTML = '<option value="">Любая модель</option>';
-            if (brand && carsDatabase && carsDatabase.filter(c => c.brand === brand).length) {
+            if (brand && visibleCars && visibleCars.filter(c => c.brand === brand).length) {
                 advModelSelect.disabled = false;
-                const models = [...new Map(carsDatabase.filter(car => car.brand === brand).map(car => [car.model, car.model])).values()];
+                const models = [...new Map(visibleCars.filter(car => car.brand === brand).map(car => [car.model, car.model])).values()];
                 models.forEach(m => {
                     const opt = document.createElement('option');
                     opt.value = m;

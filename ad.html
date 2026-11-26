@@ -193,7 +193,9 @@
     const car = carsDatabase.find(c => c.id === carId);
     const container = document.getElementById('carContent');
 
-    if (!car) {
+    if (hiddenListingIds.has(carId)) {
+        container.innerHTML = '<div class="alert alert-warning text-center py-5">Объявление скрыто модератором. <a href="catalog.html">Вернуться в каталог</a></div>';
+    } else if (!car) {
         container.innerHTML = `<div class="alert alert-danger text-center py-5">Автомобиль не найден</div>`;
     } else {
         const phone = getRandomPhone();

@@ -317,4 +317,7 @@ carsDatabase.push(...electrifiedListings.map(car => ({
     options: []
 })));
 
+const hiddenListingIds = new Set(globalThis.autoGoHiddenListings);
+const visibleCars = carsDatabase.filter(car => !hiddenListingIds.has(car.id));
+
 if (typeof module !== 'undefined') module.exports = { carsDatabase };

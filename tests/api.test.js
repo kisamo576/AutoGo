@@ -287,3 +287,60 @@ test('жалоба сохраняется, фильтруется и может 
   assert.equal(resolved.pending, 0);
   assert.equal((await send(body)).status, 201);
 });
+
+test('ответ видит только автор, скрытое объявление можно вернуть в каталог', async () => {
+  async function login(email, password) {
+    const response = await fetch(`${baseUrl}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    assert.equal(response.status, 200);
+    return extractCookie(response);
+  }
+
+  const userCookie = await login('user@autogo.local', 'user12345');
+  const adminCookie = await login('admin@autogo.local', 'admin123');
+  const request = (path, cookie, method = 'GET', body) => fetch(baseUrl + path, {
+    method,
+    headers: { 'Content-Type': 'application/json', Cookie: cookie },
+    body: body === undefined ? undefined : JSON.stringify(body)
+  });
+  const adId = 1002;
+  const listing = { ad_id: adId, reason: 'misleading' };
+  const created = await request('/api/reports', userCookie, 'POST', listing);
+  assert.equal(created.status, 201);
+  const { report } = await created.json();
+  const reviewPath = '/api/reports/' + report.id;
+  const visibilityPath = '/api/reports/listings/' + adId + '/visibility';
+
+  const decision = { status: 'resolved', hide: true, reply: 'Сведения проверены, объявление скрыто.' };
+  assert.equal((await request(reviewPath, userCookie, 'PATCH', decision)).status, 403);
+  assert.equal((await request(reviewPath, adminCookie, 'PATCH', { ...decision, reply: 'a'.repeat(1001) })).status, 400);
+  assert.equal((await request(reviewPath, adminCookie, 'PATCH', { ...decision, status: 'dismissed' })).status, 400);
+  assert.equal((await request(reviewPath, adminCookie, 'PATCH', decision)).status, 200);
+
+  const mine = await (await request('/api/reports/mine', userCookie)).json();
+  const own = mine.reports.find(item => item.id === report.id);
+  assert.equal(own.reply, decision.reply);
+  assert.equal(own.listing_hidden, 1);
+  const adminMine = await (await request('/api/reports/mine', adminCookie)).json();
+  assert.ok(adminMine.reports.every(item => item.id !== report.id));
+  assert.equal((await fetch(baseUrl + '/api/reports/mine')).status, 401);
+
+  const hiddenScript = await fetch(baseUrl + '/cars.js');
+  assert.equal(hiddenScript.headers.get('cache-control'), 'no-store');
+  assert.ok((await hiddenScript.text()).startsWith('globalThis.autoGoHiddenListings = [1002];'));
+  assert.equal((await request('/api/reports', userCookie, 'POST', listing)).status, 409);
+  assert.equal((await request(visibilityPath, userCookie, 'PUT', { hidden: false })).status, 403);
+  assert.equal((await request(visibilityPath, adminCookie, 'PUT', { hidden: false })).status, 200);
+
+  const restoredScript = await fetch(baseUrl + '/cars.js');
+  assert.ok((await restoredScript.text()).startsWith('globalThis.autoGoHiddenListings = [];'));
+  const afterRestore = await (await request('/api/reports/mine', userCookie)).json();
+  const restored = afterRestore.reports.find(item => item.id === report.id);
+  assert.equal(restored.listing_hidden, 0);
+  assert.equal(restored.reply, decision.reply);
+  assert.equal((await request(visibilityPath, adminCookie, 'PUT', { hidden: true })).status, 200);
+  assert.equal((await request('/api/reports/listings/3/visibility', adminCookie, 'PUT', { hidden: true })).status, 409);
+});

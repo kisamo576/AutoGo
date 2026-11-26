@@ -1,9 +1,11 @@
 require('dotenv').config();
 
 const path = require('node:path');
+const fs = require('node:fs');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 
+const db = require('./db');
 const { attachUser } = require('./middleware/auth');
 const authRoutes = require('./routes/auth');
 const garageRoutes = require('./routes/garage');
@@ -35,6 +37,16 @@ app.use((req, res, next) => {
     return res.status(404).end();
   }
   next();
+});
+
+
+const hiddenListingIds = db.prepare('SELECT ad_id FROM hidden_listings');
+app.get('/cars.js', (req, res) => {
+  const hidden = hiddenListingIds.all().map(row => row.ad_id);
+  const source = fs.readFileSync(path.join(PROJECT_ROOT, 'cars.js'), 'utf8');
+  res.set('Cache-Control', 'no-store').type('js').send(
+    'globalThis.autoGoHiddenListings = ' + JSON.stringify(hidden) + ';\n' + source
+  );
 });
 
 app.use(express.static(PROJECT_ROOT));

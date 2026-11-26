@@ -141,6 +141,8 @@
         .btn-add:hover {
             background: var(--accent-hover);
         }
+        #reviewReportDialog { width: min(32rem, calc(100% - 2rem)); }
+        #reviewReportDialog::backdrop { background: rgba(0, 0, 0, .6); }
     </style>
 </head>
 <body>
@@ -398,6 +400,24 @@
     </div>
 </div>
 
+
+<dialog id="reviewReportDialog" class="bg-dark text-white border border-secondary rounded-4 p-4" aria-labelledby="reviewReportTitle">
+    <form id="reviewReportForm">
+        <h2 id="reviewReportTitle" class="h5">Рассмотреть жалобу</h2>
+        <p id="reviewReportTarget" class="text-secondary small"></p>
+        <label class="form-label" for="reviewReportReply">Ответ пользователю</label>
+        <textarea id="reviewReportReply" name="reply" class="form-control mb-3" rows="4" maxlength="1000" required></textarea>
+        <div id="reviewReportVisibility" class="form-check mb-3">
+            <input type="checkbox" name="hide" id="reviewReportHide" class="form-check-input">
+            <label for="reviewReportHide" class="form-check-label">Скрыть объявление из каталога</label>
+        </div>
+        <p id="reviewReportError" class="text-warning small" role="alert"></p>
+        <div class="d-flex flex-wrap justify-content-end gap-2">
+            <button type="button" id="reviewReportCancel" class="btn btn-outline-purple">Отмена</button>
+            <button type="submit" class="btn btn-purple">Сохранить решение</button>
+        </div>
+    </form>
+</dialog>
 
 <footer class="border-top mt-5 py-4 text-center text-secondary small">© 2025 AutoGO · Административная панель</footer>
 

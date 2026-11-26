@@ -208,7 +208,7 @@
     });
 
     function getFilteredCars() {
-        const matches = carsDatabase.filter(car => {
+        const matches = visibleCars.filter(car => {
             if (!matchesPowertrain(car, filters.powertrain)) return false;
             if (filters.brand && car.brand !== filters.brand) return false;
             if (filters.model && car.model !== filters.model) return false;
