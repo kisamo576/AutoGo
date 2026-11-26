@@ -137,6 +137,17 @@
         <a href="profile.html#favorites" class="btn btn-outline-purple btn-sm">Избранное</a>
         <span id="favoritesStatus" role="status" class="text-secondary small"></span>
     </div>
+    <div class="mb-3">
+        <label for="powertrainFilter" class="form-label">Тип двигателя</label>
+        <select id="powertrainFilter" class="form-select w-auto">
+            <option value="">Любой</option>
+            <option value="gasoline">Бензин</option>
+            <option value="diesel">Дизель</option>
+            <option value="hybrid">Гибрид (все)</option>
+            <option value="plugInHybrid">Подключаемый гибрид</option>
+            <option value="electric">Электро</option>
+        </select>
+    </div>
     <div id="activeFiltersContainer" class="active-filters"></div>
     <div id="resetFilterBtn" style="display: none;" class="mb-3">
         <button class="btn btn-outline-purple btn-sm" onclick="resetFiltersAndReload()">Сбросить все фильтры</button>
@@ -173,7 +184,9 @@
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     
+    const powertrainParam = urlParams.get("powertrain");
     const filters = {
+        powertrain: Object.hasOwn(powertrainLabels, powertrainParam) ? powertrainParam : "",
         brand: urlParams.get('brand') || '',
         model: urlParams.get('model') || '',
         yearFrom: urlParams.get('yearFrom') || '',
@@ -184,16 +197,30 @@
         volTo: urlParams.get('volTo') ? parseFloat(urlParams.get('volTo')) : Infinity
     };
     
+
+    const powertrainFilter = document.getElementById('powertrainFilter');
+    powertrainFilter.value = filters.powertrain;
+    powertrainFilter.addEventListener('change', () => {
+        const params = new URLSearchParams(window.location.search);
+        if (powertrainFilter.value) params.set('powertrain', powertrainFilter.value);
+        else params.delete('powertrain');
+        window.location.search = params.toString();
+    });
+
     function getFilteredCars() {
-        return carsDatabase.filter(car => {
+        const matches = carsDatabase.filter(car => {
+            if (!matchesPowertrain(car, filters.powertrain)) return false;
             if (filters.brand && car.brand !== filters.brand) return false;
             if (filters.model && car.model !== filters.model) return false;
             if (filters.yearFrom && car.year < parseInt(filters.yearFrom)) return false;
             if (filters.yearTo && car.year > parseInt(filters.yearTo)) return false;
             if (car.price < filters.priceFrom || car.price > filters.priceTo) return false;
-            if (parseFloat(car.engine) < filters.volFrom || parseFloat(car.engine) > filters.volTo) return false;
+            const volume = parseFloat(car.engine);
+            if ((filters.volFrom > 0 || filters.volTo < Infinity) &&
+                (!Number.isFinite(volume) || volume < filters.volFrom || volume > filters.volTo)) return false;
             return true;
         });
+        return filters.powertrain === "electric" ? matches.sort((a, b) => Number(Boolean(b.batteryKwh)) - Number(Boolean(a.batteryKwh))) : matches;
     }
     
     function displayActiveFilters() {
@@ -203,6 +230,7 @@
         container.innerHTML = '';
         
         const activeFiltersList = [];
+        if (filters.powertrain) activeFiltersList.push({ label: powertrainLabels[filters.powertrain], key: "powertrain" });
         if (filters.brand) activeFiltersList.push({ label: `Марка: ${filters.brand}`, key: 'brand' });
         if (filters.model) activeFiltersList.push({ label: `Модель: ${filters.model}`, key: 'model' });
         if (filters.yearFrom) activeFiltersList.push({ label: `Год от: ${filters.yearFrom}`, key: 'yearFrom' });
@@ -272,8 +300,9 @@
                         
                         <div class="car-details">
                             <span class="car-detail-item"><i class="bi bi-calendar3"></i> ${car.year} г.</span>
-                            <span class="car-detail-item"><i class="bi bi-fuel-pump"></i> ${car.engine} л</span>
+                            <span class="car-detail-item"><i class="bi bi-fuel-pump"></i> ${formatCarEngine(car)}</span>
                             <span class="car-detail-item"><i class="bi bi-speedometer2"></i> ${car.mileage} км</span>
+                            ${car.electricRangeKm ? `<span class="car-detail-item"><i class="bi bi-lightning-charge"></i> ${car.electricRangeKm} км на электротяге</span>` : ''}
                         </div>
                         
                         <div class="car-description">
@@ -358,11 +387,17 @@
             ['Цена', car => '$' + car.price.toLocaleString()],
             ['Год выпуска', car => car.year],
             ['Пробег', car => car.mileage + ' км'],
-            ['Двигатель', car => car.engine === 'эл.' ? 'Электромотор' : car.engine + ' л'],
+            ['Двигатель', formatCarEngine],
             ['Кузов', car => car.bodyType],
             ['Привод', car => car.drive],
             ['Коробка передач', car => car.transmission]
         ];
+        if (cars.some(car => car.batteryKwh)) {
+            fields.push(
+                ['Батарея', car => car.batteryKwh ? car.batteryKwh + ' кВт·ч' : '—'],
+                ['Запас хода на электротяге', car => car.electricRangeKm ? car.electricRangeKm + ' км' : '—']
+            );
+        }
         for (const [label, value] of fields) {
             const row = body.insertRow();
             const title = document.createElement('th');

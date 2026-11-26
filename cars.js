@@ -24,8 +24,8 @@ const modelsData = {
         { model: "X7", engine: "3.0", priceNew: 95000, priceUsed: 65000, bodyType: "Внедорожник / SUV", drive: "Полный (4WD/AWD)" },
         { model: "X1", engine: "1.5", priceNew: 40000, priceUsed: 25000, bodyType: "Внедорожник / SUV", drive: "Передний" },
         { model: "X6", engine: "3.0", priceNew: 85000, priceUsed: 55000, bodyType: "Внедорожник / SUV", drive: "Полный (4WD/AWD)" },
-        { model: "M3", engine: "3.0", priceNew: 90000, priceUsed: 60000, bodyType: "Седан", drive: "Задний" },
-        { model: "M5", engine: "4.4", priceNew: 120000, priceUsed: 80000, bodyType: "Седан", drive: "Полный (4WD/AWD)" },
+        { model: "M3", powertrain: "gasoline", engine: "3.0", priceNew: 90000, priceUsed: 60000, bodyType: "Седан", drive: "Задний" },
+        { model: "M5", powertrain: "gasoline", engine: "4.4", priceNew: 120000, priceUsed: 80000, bodyType: "Седан", drive: "Полный (4WD/AWD)" },
         { model: "i4", engine: "эл.", priceNew: 65000, priceUsed: 45000, bodyType: "Лифтбек", drive: "Задний" },
         { model: "2 Series", engine: "2.0", priceNew: 42000, priceUsed: 26000, bodyType: "Купе", drive: "Задний" },
         { model: "4 Series", engine: "2.0", priceNew: 52000, priceUsed: 33000, bodyType: "Купе", drive: "Задний" },
@@ -47,7 +47,7 @@ const modelsData = {
         { model: "EQS", engine: "эл.", priceNew: 105000, priceUsed: 72000, bodyType: "Седан", drive: "Полный (4WD/AWD)" }
     ],
     "Audi": [
-        { model: "Q7", engine: "3.0", priceNew: 72000, priceUsed: 48000, bodyType: "Внедорожник / SUV", drive: "Полный (4WD/AWD)" },
+        { model: "Q7", powertrain: "diesel", engine: "3.0", priceNew: 72000, priceUsed: 48000, bodyType: "Внедорожник / SUV", drive: "Полный (4WD/AWD)" },
         { model: "Q5", engine: "2.0", priceNew: 55000, priceUsed: 35000, bodyType: "Внедорожник / SUV", drive: "Полный (4WD/AWD)" },
         { model: "A6", engine: "2.0", priceNew: 62000, priceUsed: 40000, bodyType: "Седан", drive: "Передний" },
         { model: "A4", engine: "2.0", priceNew: 48000, priceUsed: 30000, bodyType: "Седан", drive: "Передний" },
@@ -72,7 +72,7 @@ const modelsData = {
         { model: "Supra", engine: "3.0", priceNew: 55000, priceUsed: 38000, bodyType: "Купе", drive: "Задний" },
         { model: "Avalon", engine: "3.5", priceNew: 42000, priceUsed: 26000, bodyType: "Седан", drive: "Передний" },
         { model: "C-HR", engine: "1.8", priceNew: 28000, priceUsed: 18000, bodyType: "Внедорожник / SUV", drive: "Передний" },
-        { model: "Hilux", engine: "2.8", priceNew: 45000, priceUsed: 29000, bodyType: "Пикап", drive: "Полный (4WD/AWD)" },
+        { model: "Hilux", powertrain: "diesel", engine: "2.8", priceNew: 45000, priceUsed: 29000, bodyType: "Пикап", drive: "Полный (4WD/AWD)" },
         { model: "Fortuner", engine: "2.8", priceNew: 50000, priceUsed: 33000, bodyType: "Внедорожник / SUV", drive: "Полный (4WD/AWD)" },
         { model: "bZ4X", engine: "эл.", priceNew: 46000, priceUsed: 30000, bodyType: "Внедорожник / SUV", drive: "Полный (4WD/AWD)" }
     ],
@@ -208,6 +208,7 @@ for (const brand of brands) {
             year: year,
             price: Math.round(price),
             engine: data.engine,
+            powertrain: data.powertrain || (data.engine === "эл." ? "electric" : null),
             mileage: mileage,
             description: description,
             photo: photo,
@@ -222,3 +223,96 @@ for (const brand of brands) {
         });
     }
 }
+
+// Фиксированные демонстрационные объявления. ID сохраняются в избранном.
+const electrifiedListings = [
+    {
+        id: 1001, brand: 'Tesla', model: 'Model Y Long Range', powertrain: 'electric',
+        engine: null, year: 2024, price: 39500, mileage: 28000, photo: 'tesla_model_y.jpg',
+        bodyType: 'Внедорожник / SUV', drive: 'Полный', batteryKwh: 75, electricRangeKm: 500
+    },
+    {
+        id: 1002, brand: 'BMW', model: 'i4 eDrive40', powertrain: 'electric',
+        engine: null, year: 2023, price: 41900, mileage: 33000, photo: 'bmw_i4.jpg',
+        bodyType: 'Лифтбек', drive: 'Задний', batteryKwh: 81, electricRangeKm: 490
+    },
+    {
+        id: 1003, brand: 'Volkswagen', model: 'ID.3 Pro', powertrain: 'electric',
+        engine: null, year: 2023, price: 23900, mileage: 38000, photo: 'volkswagen_id_3.jpg',
+        bodyType: 'Хэтчбек', drive: 'Задний', batteryKwh: 58, electricRangeKm: 385
+    },
+    {
+        id: 1004, brand: 'Kia', model: 'EV6 Long Range', powertrain: 'electric',
+        engine: null, year: 2024, price: 36700, mileage: 24000, photo: 'kia_ev6.jpg',
+        bodyType: 'Внедорожник / SUV', drive: 'Задний', batteryKwh: 77, electricRangeKm: 455
+    },
+    {
+        id: 1005, brand: 'Audi', model: 'e-tron 55 quattro', powertrain: 'electric',
+        engine: null, year: 2022, price: 33900, mileage: 49000, photo: 'audi_e_tron.jpg',
+        bodyType: 'Внедорожник / SUV', drive: 'Полный', batteryKwh: 86, electricRangeKm: 350
+    },
+    {
+        id: 1006, brand: 'Toyota', model: 'Corolla Hybrid', powertrain: 'hybrid',
+        engine: '1.8', year: 2023, price: 21400, mileage: 37000, photo: 'toyota_corolla.jpg',
+        bodyType: 'Седан', drive: 'Передний'
+    },
+    {
+        id: 1007, brand: 'Toyota', model: 'RAV4 Hybrid', powertrain: 'hybrid',
+        engine: '2.5', year: 2024, price: 32200, mileage: 24000, photo: 'toyota_rav4.jpg',
+        bodyType: 'Внедорожник / SUV', drive: 'Полный'
+    },
+    {
+        id: 1008, brand: 'Lexus', model: 'RX 350h', powertrain: 'hybrid',
+        engine: '2.5', year: 2024, price: 52900, mileage: 19000, photo: 'lexus_rx.jpg',
+        bodyType: 'Внедорожник / SUV', drive: 'Полный'
+    },
+    {
+        id: 1009, brand: 'Toyota', model: 'RAV4 Plug-in Hybrid', powertrain: 'plugInHybrid',
+        engine: '2.5', year: 2024, price: 41900, mileage: 19000, photo: 'toyota_rav4.jpg',
+        bodyType: 'Внедорожник / SUV', drive: 'Полный', batteryKwh: 18, electricRangeKm: 68
+    },
+    {
+        id: 1010, brand: 'Lexus', model: 'NX 450h+', powertrain: 'plugInHybrid',
+        engine: '2.5', year: 2024, price: 48700, mileage: 22000, photo: 'lexus_nx.jpg',
+        bodyType: 'Внедорожник / SUV', drive: 'Полный', batteryKwh: 18, electricRangeKm: 65
+    },
+    {
+        id: 1011, brand: 'Volvo', model: 'XC60 Recharge', powertrain: 'plugInHybrid',
+        engine: '2.0', year: 2023, price: 45200, mileage: 28000, photo: 'volvo_xc60.jpg',
+        bodyType: 'Внедорожник / SUV', drive: 'Полный', batteryKwh: 19, electricRangeKm: 62
+    },
+    {
+        id: 1012, brand: 'Hyundai', model: 'Tucson Plug-in Hybrid', powertrain: 'plugInHybrid',
+        engine: '1.6', year: 2023, price: 29400, mileage: 31000, photo: 'hyundai_tucson.jpg',
+        bodyType: 'Внедорожник / SUV', drive: 'Полный', batteryKwh: 14, electricRangeKm: 50
+    }
+];
+
+const powertrainLabels = {
+    gasoline: 'Бензин',
+    diesel: 'Дизель',
+    hybrid: 'Гибрид',
+    plugInHybrid: 'Подключаемый гибрид',
+    electric: 'Электро'
+};
+
+function matchesPowertrain(car, filter) {
+    return !filter || car.powertrain === filter ||
+        (filter === 'hybrid' && car.powertrain === 'plugInHybrid');
+}
+
+function formatCarEngine(car) {
+    const label = powertrainLabels[car.powertrain];
+    if (car.powertrain === 'electric') return 'Электромотор';
+    return label ? label + ' · ' + car.engine + ' л' : car.engine + ' л';
+}
+
+carsDatabase.push(...electrifiedListings.map(car => ({
+    ...car,
+    mileage: car.mileage.toLocaleString('ru-RU'),
+    photo: 'images/' + car.photo,
+    description: 'Демонстрационное объявление. Фото иллюстрирует модель. Характеристики указаны для примера.',
+    transmission: car.powertrain === 'electric' ? 'Одноступенчатая' : 'Автомат',
+    condition: 'С пробегом',
+    options: []
+})));

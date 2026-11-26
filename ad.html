@@ -199,7 +199,11 @@
                             </div>
                             <div class="spec-grid">
                                 <div class="spec-item"><i class="bi bi-calendar3"></i><div class="fw-bold">${car.year}</div><small>Год</small></div>
-                                <div class="spec-item"><i class="bi bi-fuel-pump"></i><div class="fw-bold">${car.engine} л</div><small>Двигатель</small></div>
+                                <div class="spec-item"><i class="bi bi-fuel-pump"></i><div class="fw-bold">${formatCarEngine(car)}</div><small>Двигатель</small></div>
+                                ${car.batteryKwh ? `
+                                    <div class="spec-item"><i class="bi bi-battery-charging"></i><div class="fw-bold">${car.batteryKwh} кВт·ч</div><small>Батарея</small></div>
+                                    <div class="spec-item"><i class="bi bi-lightning-charge"></i><div class="fw-bold">${car.electricRangeKm} км</div><small>Запас хода на электротяге</small></div>
+                                ` : ''}
                                 <div class="spec-item"><i class="bi bi-speedometer2"></i><div class="fw-bold">${car.mileage} км</div><small>Пробег</small></div>
                                 <div class="spec-item"><i class="bi bi-car-front"></i><div class="fw-bold">${car.bodyType || '—'}</div><small>Кузов</small></div>
                                 <div class="spec-item"><i class="bi bi-gear"></i><div class="fw-bold">${car.transmission || '—'}</div><small>КПП</small></div>
@@ -207,12 +211,12 @@
                                 <div class="spec-item"><i class="bi bi-palette"></i><div class="fw-bold">${car.color || '—'}</div><small>Цвет</small></div>
                                 <div class="spec-item"><i class="bi bi-check-circle"></i><div class="fw-bold">${car.condition || 'С пробегом'}</div><small>Состояние</small></div>
                             </div>
-                            <div class="vin-check">
-                                <div><i class="bi bi-shield-check text-success"></i> <span class="fw-bold small">VIN: ${car.vin || 'WBA' + car.id + 'X123'}</span></div>
+                            ${car.vin ? `<div class="vin-check">
+                                <div><i class="bi bi-shield-check text-success"></i> <span class="fw-bold small">VIN: ${car.vin}</span></div>
                                 <button class="btn btn-outline-warning btn-sm" onclick="alert('Отчёт по VIN: автомобиль не был в ДТП, 2 владельца, пробег оригинальный.')">
                                     <i class="bi bi-search"></i> Проверить
                                 </button>
-                            </div>
+                            </div>` : ''}
                         </div>
                     </div>
                 </div>

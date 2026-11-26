@@ -74,7 +74,7 @@ function createStaticCard(car, isPremium = false) {
                 <div class="p-3">
                     <div class="price">$${car.price.toLocaleString()}</div>
                     <div class="fw-bold">${car.brand} ${car.model}</div>
-                    <div class="small text-secondary">${car.year} • ${car.engine} л • ${car.mileage} км</div>
+                    <div class="small text-secondary">${car.year} • ${formatCarEngine(car)} • ${car.mileage} км</div>
                     ${isPremium ? '<span class="premium-badge"><i class="bi bi-star-fill"></i> Премиум продавец</span>' : ''}
                     <hr class="border-secondary">
                     <div class="d-flex justify-content-between">
