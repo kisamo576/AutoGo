@@ -317,6 +317,17 @@ carsDatabase.push(...electrifiedListings.map(car => ({
     options: []
 })));
 
+function escapeListingText(value) {
+    return value.replace(/[&<>]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[character]);
+}
+
+carsDatabase.push(...(globalThis.autoGoPublishedListings ?? []).map(listing => ({
+    ...listing,
+    photo: NO_PHOTO_IMG,
+    mileage: listing.mileage.toLocaleString('ru-RU'),
+    condition: listing.mileage === 0 ? 'Новый' : 'С пробегом'
+})));
+
 const hiddenListingIds = new Set(globalThis.autoGoHiddenListings);
 const visibleCars = carsDatabase.filter(car => !hiddenListingIds.has(car.id));
 

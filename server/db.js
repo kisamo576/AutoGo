@@ -138,6 +138,22 @@ db.exec(`
     ON ad_reports (user_id, ad_id) WHERE status = 'pending';
 
 
+  CREATE TABLE IF NOT EXISTS listings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    model_id INTEGER NOT NULL,
+    year INTEGER NOT NULL,
+    price INTEGER NOT NULL,
+    mileage INTEGER NOT NULL,
+    description TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'published' CHECK (status IN ('published', 'archived')),
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE INDEX IF NOT EXISTS listings_by_owner ON listings (user_id, id);
+  CREATE INDEX IF NOT EXISTS listings_by_status ON listings (status, id);
+
   CREATE TABLE IF NOT EXISTS hidden_listings (
     ad_id INTEGER PRIMARY KEY,
     hidden_by INTEGER REFERENCES users(id) ON DELETE SET NULL,

@@ -7,7 +7,7 @@
         try {
             const entries = JSON.parse(localStorage.getItem(key) || '[]');
             if (!Array.isArray(entries)) return new Map();
-            return new Map(entries.filter(entry => entry && carsById.has(entry.id))
+            return new Map(entries.filter(entry => entry && Number.isSafeInteger(entry.id) && entry.id > 0)
                 .map(entry => [entry.id, typeof entry.note === 'string' ? entry.note.slice(0, 200) : '']));
         } catch {
             return new Map();
@@ -60,7 +60,7 @@
 
     function renderList() {
         if (!list) return;
-        const savedCars = [...favorites.keys()].reverse().map(id => carsById.get(id));
+        const savedCars = [...favorites.keys()].reverse().map(id => carsById.get(id)).filter(Boolean);
         if (sort.value === 'price') savedCars.sort((a, b) => a.price - b.price);
         if (sort.value === 'year') savedCars.sort((a, b) => b.year - a.year);
         sort.disabled = savedCars.length < 2;

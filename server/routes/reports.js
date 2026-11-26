@@ -1,11 +1,10 @@
 const express = require('express');
 const db = require('../db');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
-const { carsDatabase } = require('../../cars');
+const { listingExists } = require('../services/listings');
 const { reportReasons, reportStatuses } = require('../../report-options');
 
 const router = express.Router();
-const adIds = new Set(carsDatabase.map(car => car.id));
 
 const createReport = db.prepare(`
   INSERT INTO ad_reports (user_id, ad_id, reason, comment)
@@ -62,7 +61,7 @@ function readPage(value) {
 
 router.post('/', requireAuth, (req, res) => {
   const { ad_id: adId, reason, comment = '' } = req.body ?? {};
-  if (!Number.isSafeInteger(adId) || !adIds.has(adId)) {
+  if (!Number.isSafeInteger(adId) || !listingExists(adId, true)) {
     return res.status(400).json({ error: 'Выбери существующее объявление' });
   }
   if (typeof reason !== 'string' || !Object.hasOwn(reportReasons, reason)) {
@@ -141,7 +140,7 @@ router.patch('/:id', requireAuth, requireAdmin, (req, res) => {
 
 router.put('/listings/:id/visibility', requireAuth, requireAdmin, (req, res) => {
   const id = Number(req.params.id);
-  if (!adIds.has(id)) return res.status(404).json({ error: 'Объявление не найдено' });
+  if (!listingExists(id)) return res.status(404).json({ error: 'Объявление не найдено' });
   const { hidden } = req.body ?? {};
   if (typeof hidden !== 'boolean') return res.status(400).json({ error: 'Укажи видимость объявления' });
   if (hidden && !confirmedReportForAd.get(id)) {

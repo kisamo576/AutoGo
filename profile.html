@@ -51,11 +51,12 @@
         <div class="col-md-9">
             <div id="myAdsTab" class="tab-content-card">
                 <div class="bg-dark p-4 rounded-4">
-                    <h3 class="fw-bold mb-3">Мои объявления</h3>
-                    <p class="text-secondary">У вас пока нет активных объявлений.</p>
-                    <button class="btn btn-purple mt-2" onclick="window.location.href='add_ad.html'">
-                        <i class="bi bi-plus-circle"></i> Добавить объявление
-                    </button>
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                        <h3 class="fw-bold mb-0">Мои объявления</h3>
+                        <a href="add_ad.html" class="btn btn-sm btn-purple">Добавить объявление</a>
+                    </div>
+                    <p id="myListingMessage" class="small text-secondary" role="status"></p>
+                    <div id="myListingList" class="d-grid gap-3"></div>
                 </div>
             </div>
             
@@ -182,5 +183,6 @@
 <script src="report-options.js"></script>
 <script src="report-profile.js"></script>
 <script src="premium.js"></script>
+<script src="my-listings.js"></script>
 </body>
 </html>

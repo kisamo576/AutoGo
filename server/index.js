@@ -13,6 +13,8 @@ const forumRoutes = require('./routes/forum');
 const docsRoutes = require('./routes/docs');
 const agentRoutes = require('./routes/agent');
 const premiumRoutes = require('./routes/premium');
+const listingsRoutes = require('./routes/listings');
+const { getPublishedListings } = require('./services/listings');
 const reportsRoutes = require('./routes/reports');
 const healthRoutes = require('./routes/health');
 
@@ -31,6 +33,7 @@ app.use('/api/forum', forumRoutes);
 app.use('/api/docs', docsRoutes);
 app.use('/api/agent', agentRoutes);
 app.use('/api/reports', reportsRoutes);
+app.use('/api/listings', listingsRoutes);
 app.use('/api/premium', premiumRoutes);
 
 const BLOCKED_PREFIXES = ['/server', '/data', '/node_modules', '/tests', '/scripts', '/team-instructions', '/.env'];
@@ -47,7 +50,8 @@ app.get('/cars.js', (req, res) => {
   const hidden = hiddenListingIds.all().map(row => row.ad_id);
   const source = fs.readFileSync(path.join(PROJECT_ROOT, 'cars.js'), 'utf8');
   res.set('Cache-Control', 'no-store').type('js').send(
-    'globalThis.autoGoHiddenListings = ' + JSON.stringify(hidden) + ';\n' + source
+    'globalThis.autoGoHiddenListings = ' + JSON.stringify(hidden) + ';\n' +
+    'globalThis.autoGoPublishedListings = ' + JSON.stringify(getPublishedListings()) + ';\n' + source
   );
 });
 

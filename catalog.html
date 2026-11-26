@@ -220,7 +220,11 @@
                 (!Number.isFinite(volume) || volume < filters.volFrom || volume > filters.volTo)) return false;
             return true;
         });
-        return filters.powertrain === "electric" ? matches.sort((a, b) => Number(Boolean(b.batteryKwh)) - Number(Boolean(a.batteryKwh))) : matches;
+        return matches.sort((a, b) => {
+            if (a.isUserListing || b.isUserListing) return Number(Boolean(b.isUserListing)) - Number(Boolean(a.isUserListing)) || b.id - a.id;
+            if (filters.powertrain === "electric") return Number(Boolean(b.batteryKwh)) - Number(Boolean(a.batteryKwh));
+            return 0;
+        });
     }
     
     function displayActiveFilters() {
@@ -306,18 +310,20 @@
                         </div>
                         
                         <div class="car-description">
-                            ${car.description}
+                            ${escapeListingText(car.description)}
                         </div>
                         
                         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-2">
+                            ${!car.isUserListing ? `
                             <div class="contact-badge">
                                 <i class="bi bi-telephone-fill"></i>
                                 <span>${phone}</span>
-                            </div>
+                            </div>` : ''}
                             <div class="d-flex flex-wrap gap-2">
+                                ${!car.isUserListing ? `
                                 <button class="btn btn-outline-purple btn-sm" onclick="alert('Связь с продавцом: ${phone}')">
                                     <i class="bi bi-telephone"></i> Позвонить
-                                </button>
+                                </button>` : ''}
                                 <label class="form-check d-flex align-items-center gap-2 mb-0">
                                     <input type="checkbox" class="form-check-input mt-0" data-compare-car="${car.id}">
                                     Сравнить

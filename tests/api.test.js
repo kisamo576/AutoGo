@@ -385,3 +385,51 @@ test('демо-премиум требует входа, сохраняется 
   assert.equal(reactivated.status, 201);
   assert.equal((await reactivated.json()).is_premium, true);
 });
+
+test('владелец публикует, редактирует и снимает объявление с публикации', async () => {
+  async function signIn(email, password) {
+    const response = await fetch(`${baseUrl}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    assert.equal(response.status, 200);
+    return extractCookie(response);
+  }
+  const owner = await signIn('user@autogo.local', 'user12345');
+  const other = await signIn('admin@autogo.local', 'admin123');
+  const request = (path, cookie, method = 'GET', body) => fetch(baseUrl + path, {
+    method,
+    headers: { 'Content-Type': 'application/json', ...(cookie ? { Cookie: cookie } : {}) },
+    body: body === undefined ? undefined : JSON.stringify(body)
+  });
+
+  const body = { model_id: 1, year: 2022, price: 25000, mileage: 50000, description: '  Объявление для теста  ' };
+  assert.equal((await request('/api/listings', null, 'POST', body)).status, 401);
+  assert.equal((await request('/api/listings', owner, 'POST', { ...body, price: 0 })).status, 400);
+  const created = await request('/api/listings', owner, 'POST', body);
+  assert.equal(created.status, 201);
+  const { listing } = await created.json();
+  assert.equal(listing.status, 'published');
+  assert.equal(listing.description, 'Объявление для теста');
+  const url = '/api/listings/' + listing.id;
+  assert.equal((await request(url, owner)).status, 200);
+  assert.equal((await request(url, other)).status, 404);
+  assert.equal((await request(url, other, 'PUT', body)).status, 404);
+  assert.equal((await request(url + '/status', other, 'PATCH', { status: 'archived' })).status, 404);
+  assert.equal((await (await request('/api/listings/mine', other)).json()).listings.length, 0);
+
+  const edited = await request(url, owner, 'PUT', { ...body, price: 23000, description: 'Новая цена <23001>' });
+  assert.equal(edited.status, 200);
+  const items = (await (await request('/api/listings/mine', owner)).json()).listings;
+  assert.equal(items[0].price, 23000);
+  assert.equal(items[0].id, listing.id);
+  const catalog = () => fetch(baseUrl + '/cars.js').then(response => response.text());
+  assert.match(await catalog(), /Новая цена <23001>/);
+  assert.equal((await request('/api/reports', other, 'POST', { ad_id: listing.id, reason: 'wrong_price' })).status, 201);
+  assert.equal((await request(url + '/status', owner, 'PATCH', { status: 'archived' })).status, 200);
+  assert.doesNotMatch(await catalog(), /Новая цена <23001>/);
+  assert.equal((await request(url, owner)).status, 200);
+  assert.equal((await request(url + '/status', owner, 'PATCH', { status: 'published' })).status, 200);
+  assert.match(await catalog(), /Новая цена <23001>/);
+});
