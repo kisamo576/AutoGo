@@ -10,6 +10,7 @@ const garageRoutes = require('./routes/garage');
 const forumRoutes = require('./routes/forum');
 const docsRoutes = require('./routes/docs');
 const agentRoutes = require('./routes/agent');
+const reportsRoutes = require('./routes/reports');
 const healthRoutes = require('./routes/health');
 
 const app = express();
@@ -26,6 +27,7 @@ app.use('/api/garage', garageRoutes);
 app.use('/api/forum', forumRoutes);
 app.use('/api/docs', docsRoutes);
 app.use('/api/agent', agentRoutes);
+app.use('/api/reports', reportsRoutes);
 
 const BLOCKED_PREFIXES = ['/server', '/data', '/node_modules', '/tests', '/scripts', '/team-instructions', '/.env'];
 app.use((req, res, next) => {

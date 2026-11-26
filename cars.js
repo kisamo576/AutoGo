@@ -316,3 +316,5 @@ carsDatabase.push(...electrifiedListings.map(car => ({
     condition: 'С пробегом',
     options: []
 })));
+
+if (typeof module !== 'undefined') module.exports = { carsDatabase };

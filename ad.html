@@ -108,6 +108,8 @@
         @media (max-width: 768px) {
             .spec-grid { grid-template-columns: repeat(2, 1fr); }
         }
+        #reportDialog { width: min(29rem, calc(100% - 2rem)); }
+        #reportDialog::backdrop { background: rgba(0, 0, 0, .6); }
     </style>
 </head>
 <body>
@@ -125,6 +127,7 @@
         <a href="profile.html#favorites" class="btn btn-outline-purple btn-sm">Избранное</a>
         <span id="favoritesStatus" role="status" class="text-secondary small"></span>
     </div>
+    <p id="reportStatus" class="small text-success" role="status"></p>
     <div id="carContent">
         <div class="text-center py-5">
             <div class="spinner-border text-purple" role="status"></div>
@@ -154,6 +157,25 @@
 </div>
 
 <footer class="border-top mt-5 py-4 text-center text-secondary small">© 2025 AutoGO</footer>
+
+<dialog id="reportDialog" class="bg-dark text-white border border-secondary rounded-4 p-4" aria-labelledby="reportTitle">
+    <form id="reportForm">
+        <h2 id="reportTitle" class="h5">Пожаловаться на объявление</h2>
+        <p id="reportTarget" class="text-secondary small mb-3"></p>
+        <label class="form-label" for="reportReason">Причина</label>
+        <select id="reportReason" name="reason" class="form-select mb-3" required>
+            <option value="">Выберите причину</option>
+        </select>
+        <label class="form-label" for="reportComment">Комментарий</label>
+        <textarea id="reportComment" name="comment" class="form-control" rows="3" maxlength="500" aria-describedby="reportCommentHint"></textarea>
+        <p id="reportCommentHint" class="text-secondary small mt-1">До 500 символов. Для другой причины комментарий обязателен.</p>
+        <p id="reportError" class="text-warning small" role="alert"></p>
+        <div class="d-flex flex-wrap justify-content-end gap-2">
+            <button id="reportCancel" type="button" class="btn btn-outline-purple">Отмена</button>
+            <button type="submit" class="btn btn-danger">Отправить</button>
+        </div>
+    </form>
+</dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="nav.js"></script>
@@ -253,7 +275,7 @@
                                 <div class="d-flex gap-2 flex-wrap">
                                     <a href="catalog.html" class="btn btn-outline-purple btn-sm flex-grow-1">← Назад</a>
                                     <button type="button" class="btn btn-outline-danger btn-sm flex-grow-1" data-favorite-car="${car.id}" aria-pressed="false">♡ В избранное</button>
-                                    <button class="btn btn-report btn-sm flex-grow-1" onclick="alert('Жалоба отправлена модератору. Мы рассмотрим её в течение 24 часов.')">
+                                    <button type="button" class="btn btn-report btn-sm flex-grow-1" data-report-ad="${car.id}" data-report-title="${car.brand} ${car.model}">
                                         <i class="bi bi-exclamation-triangle"></i> Пожаловаться
                                     </button>
                                 </div>
@@ -297,5 +319,7 @@
     });
 </script>
 <script src="favorites.js"></script>
+<script src="report-options.js"></script>
+<script src="report-ad.js"></script>
 </body>
 </html>

@@ -208,8 +208,8 @@
                     <div class="col-md-3">
                         <div class="admin-stats-card">
                             <i class="bi bi-flag-fill text-danger"></i>
-                            <h3>8</h3>
-                            <p class="mb-0">Жалоб</p>
+                            <h3 id="pendingReportCount">—</h3>
+                            <p class="mb-0">Жалоб на рассмотрении</p>
                         </div>
                     </div>
                 </div>
@@ -224,10 +224,6 @@
                         <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-2">
                             <span style="color:var(--text);"><i class="bi bi-car-front"></i> Новое объявление: BMW X5</span>
                             <span class="small" style="color:var(--text-muted);">12 минут назад</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-2">
-                            <span style="color:var(--text);"><i class="bi bi-exclamation-triangle text-warning"></i> Жалоба на объявление #4821</span>
-                            <span class="small" style="color:var(--text-muted);">1 час назад</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <span style="color:var(--text);"><i class="bi bi-star-fill text-warning"></i> Премиум активирован: Иван П.</span>
@@ -348,17 +344,27 @@
 
             <div id="tab-reports" style="display: none;">
                 <div class="bg-dark rounded-4 p-3">
-                    <h5 class="fw-bold mb-3" style="color:var(--text);">Жалобы на объявления</h5>
+                    <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-3">
+                        <div>
+                            <h2 class="h5 fw-bold mb-2">Жалобы на объявления</h2>
+                            <label for="reportStatusFilter" class="form-label small">Статус</label>
+                            <select id="reportStatusFilter" class="form-select form-select-sm">
+                                <option value="">Все жалобы</option>
+                            </select>
+                        </div>
+                        <button id="reloadReports" type="button" class="btn btn-sm btn-outline-purple">Обновить</button>
+                    </div>
+                    <p id="reportListMessage" class="small text-secondary" role="status"></p>
                     <div class="users-table-wrapper">
                         <table class="users-table">
-                            <thead><tr><th>ID объявления</th><th>Жалоба</th><th>От пользователя</th><th>Дата</th><th>Статус</th><th>Действия</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>#4821</td><td>Недостоверная информация</td><td>Анна С.</td><td>15.05.2025</td><td><span class="badge bg-warning text-dark">На рассмотрении</span></td><td><button class="btn btn-sm btn-outline-danger" onclick="alert('Отклонить жалобу')">Отклонить</button> <button class="btn btn-sm btn-outline-success" onclick="alert('Принять жалобу, объявление скрыто')">Принять</button></td></tr>
-                                <tr><td>#4790</td><td>Спам</td><td>Иван П.</td><td>14.05.2025</td><td><span class="badge bg-warning text-dark">На рассмотрении</span></td><td><button class="btn btn-sm btn-outline-danger" onclick="alert('Отклонить')">Отклонить</button> <button class="btn btn-sm btn-outline-success" onclick="alert('Принять')">Принять</button></td></tr>
-                                <tr><td>#4765</td><td>Некорректная цена</td><td>Ольга К.</td><td>12.05.2025</td><td><span class="badge bg-success">Решено</span></td><td>—</td></tr>
-                            </tbody>
+                            <thead><tr><th>Объявление</th><th>Причина</th><th>От пользователя</th><th>Дата</th><th>Статус</th><th>Действия</th></tr></thead>
+                            <tbody id="reportRows"></tbody>
                         </table>
+                    </div>
+                    <div id="reportPagination" class="d-flex align-items-center gap-2 mt-3 visually-hidden">
+                        <button type="button" id="reportPrevious" class="btn btn-sm btn-outline-purple">Назад</button>
+                        <span id="reportPage" class="small"></span>
+                        <button type="button" id="reportNext" class="btn btn-sm btn-outline-purple">Вперёд</button>
                     </div>
                 </div>
             </div>
@@ -391,6 +397,7 @@
         </div>
     </div>
 </div>
+
 
 <footer class="border-top mt-5 py-4 text-center text-secondary small">© 2025 AutoGO · Административная панель</footer>
 
@@ -483,5 +490,7 @@
     renderDictList('drivesList', drives);
     renderDictList('transmissionsList', transmissions);
 </script>
+<script src="report-options.js"></script>
+<script src="report-admin.js"></script>
 </body>
 </html>

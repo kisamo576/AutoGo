@@ -122,6 +122,21 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS ad_reports (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    ad_id INTEGER NOT NULL,
+    reason TEXT NOT NULL,
+    comment TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'resolved', 'dismissed')),
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    reviewed_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    reviewed_at TEXT
+  );
+
+  CREATE UNIQUE INDEX IF NOT EXISTS ad_reports_pending_user_ad
+    ON ad_reports (user_id, ad_id) WHERE status = 'pending';
+
   CREATE TABLE IF NOT EXISTS agent_queries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,

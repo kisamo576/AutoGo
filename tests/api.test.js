@@ -217,3 +217,73 @@ test('документация: фильтрация по марке', async () 
   assert.ok(data.docs.length > 0);
   assert.ok(data.docs.every(d => d.brand === 'Toyota'));
 });
+
+test('жалобы требуют входа, а очередь и решения доступны только администратору', async () => {
+  const send = body => fetch(`${baseUrl}/api/reports`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  assert.equal((await send({ ad_id: 1, reason: 'spam' })).status, 401);
+  assert.equal((await fetch(`${baseUrl}/api/reports`)).status, 401);
+
+  const session = await fetch(`${baseUrl}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'user@autogo.local', password: 'user12345' })
+  });
+  const headers = { 'Content-Type': 'application/json', Cookie: extractCookie(session) };
+  assert.equal((await fetch(`${baseUrl}/api/reports`, { headers })).status, 403);
+  assert.equal((await fetch(`${baseUrl}/api/reports/1`, {
+    method: 'PATCH', headers, body: JSON.stringify({ status: 'resolved' })
+  })).status, 403);
+});
+
+test('жалоба сохраняется, фильтруется и может быть рассмотрена только один раз', async () => {
+  async function signIn(email, password) {
+    const response = await fetch(`${baseUrl}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    assert.equal(response.status, 200);
+    return { 'Content-Type': 'application/json', Cookie: extractCookie(response) };
+  }
+
+  const userHeaders = await signIn('user@autogo.local', 'user12345');
+  const adminHeaders = await signIn('admin@autogo.local', 'admin123');
+  const send = body => fetch(`${baseUrl}/api/reports`, {
+    method: 'POST', headers: userHeaders, body: JSON.stringify(body)
+  });
+  const list = status => fetch(`${baseUrl}/api/reports?status=${status}`, { headers: adminHeaders });
+
+  assert.equal((await send({ ad_id: 999999, reason: 'spam' })).status, 400);
+  assert.equal((await send({ ad_id: 1, reason: 'invalid' })).status, 400);
+  assert.equal((await send({ ad_id: 1, reason: 'other', comment: ' ' })).status, 400);
+  assert.equal((await send({ ad_id: 1, reason: 'spam', comment: 'а'.repeat(501) })).status, 400);
+  assert.equal((await list('invalid')).status, 400);
+
+  const body = { ad_id: 1001, reason: 'wrong_price', comment: '  Цена в описании отличается  ' };
+  const attempts = await Promise.all([send(body), send(body)]);
+  assert.deepEqual(attempts.map(response => response.status).sort(), [201, 409]);
+  const { report } = await attempts.find(response => response.status === 201).json();
+  assert.equal(report.status, 'pending');
+
+  const pending = await (await list('pending')).json();
+  assert.equal(pending.pending, 1);
+  assert.equal(pending.reports[0].id, report.id);
+  assert.equal(pending.reports[0].comment, 'Цена в описании отличается');
+
+  const review = status => fetch(`${baseUrl}/api/reports/${report.id}`, {
+    method: 'PATCH', headers: adminHeaders, body: JSON.stringify({ status })
+  });
+  const reviewResponse = await review('resolved');
+  assert.equal(reviewResponse.status, 200);
+  assert.ok((await reviewResponse.json()).report.reviewed_at);
+  assert.equal((await review('dismissed')).status, 409);
+
+  const resolved = await (await list('resolved')).json();
+  assert.equal(resolved.reports[0].id, report.id);
+  assert.equal(resolved.pending, 0);
+  assert.equal((await send(body)).status, 201);
+});
