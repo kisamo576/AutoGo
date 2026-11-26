@@ -344,3 +344,44 @@ test('ответ видит только автор, скрытое объявл
   assert.equal((await request(visibilityPath, adminCookie, 'PUT', { hidden: true })).status, 200);
   assert.equal((await request('/api/reports/listings/3/visibility', adminCookie, 'PUT', { hidden: true })).status, 409);
 });
+
+test('демо-премиум требует входа, сохраняется и действует 30 дней', async () => {
+  const statusUrl = `${baseUrl}/api/premium/status`;
+  const purchaseUrl = `${baseUrl}/api/premium/purchase`;
+  assert.equal((await fetch(statusUrl)).status, 401);
+  assert.equal((await fetch(purchaseUrl, { method: 'POST' })).status, 401);
+
+  const email = `premium_${Date.now()}@example.com`;
+  const registration = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password: 'password123', name: 'Тест премиума' })
+  });
+  assert.equal(registration.status, 201);
+  const headers = { Cookie: extractCookie(registration) };
+  assert.deepEqual(await (await fetch(statusUrl, { headers })).json(), {
+    is_premium: false,
+    premium_until: null
+  });
+
+  const purchase = () => fetch(purchaseUrl, { method: 'POST', headers });
+  const started = Date.now();
+  const outcomes = await Promise.all([purchase(), purchase()]);
+  assert.deepEqual(outcomes.map(response => response.status).sort(), [200, 201]);
+  const [one, two] = await Promise.all(outcomes.map(response => response.json()));
+  assert.deepEqual(one, two);
+  assert.equal(one.is_premium, true);
+  const expected = started + 30 * 24 * 60 * 60 * 1000;
+  assert.ok(Math.abs(Date.parse(one.premium_until) - expected) < 5000);
+
+  const me = await (await fetch(`${baseUrl}/api/auth/me`, { headers })).json();
+  assert.equal(me.user.is_premium, true);
+  assert.equal(me.user.premium_until, one.premium_until);
+
+  db.prepare('UPDATE users SET premium_until = ? WHERE email = ?')
+    .run('2020-01-01T00:00:00.000Z', email);
+  assert.equal((await (await fetch(statusUrl, { headers })).json()).is_premium, false);
+  const reactivated = await purchase();
+  assert.equal(reactivated.status, 201);
+  assert.equal((await reactivated.json()).is_premium, true);
+});

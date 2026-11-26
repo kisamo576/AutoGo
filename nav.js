@@ -64,7 +64,7 @@
     if (user) {
       authHtml = `
         <div class="autogo-auth-area">
-          <span class="autogo-auth-chip">Вы вошли как <strong>${escapeHtml(user.name)}</strong>${user.role === 'admin' ? ' <span class="autogo-tag warning">admin</span>' : ''}</span>
+          <span class="autogo-auth-chip">Вы вошли как <strong>${escapeHtml(user.name)}</strong> <span id="autogoPremiumBadge" class="autogo-tag warning" ${user.is_premium ? '' : 'hidden'}>Премиум</span>${user.role === 'admin' ? ' <span class="autogo-tag warning">admin</span>' : ''}</span>
           ${user.role === 'admin' ? '<a href="admin.html" class="btn btn-outline-purple btn-sm">Админка</a>' : ''}
           <button class="btn btn-outline-purple btn-sm" id="autogoLogoutBtn">Выйти</button>
         </div>`;
@@ -182,9 +182,17 @@
     document.dispatchEvent(new CustomEvent('autogo:auth-ready', { detail: { user } }));
   }
 
+  function updatePremium(status) {
+    const user = window.AutoGoAuth.user;
+    if (!user) return;
+    Object.assign(user, status);
+    const badge = document.getElementById('autogoPremiumBadge');
+    if (badge) badge.hidden = !user.is_premium;
+  }
+
   let resolveReady;
   const readyPromise = new Promise((resolve) => { resolveReady = resolve; });
-  window.AutoGoAuth = { user: null, ready: readyPromise, _resolveReady: resolveReady };
+  window.AutoGoAuth = { user: null, ready: readyPromise, updatePremium, _resolveReady: resolveReady };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

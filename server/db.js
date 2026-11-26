@@ -157,6 +157,26 @@ if (!db.prepare('PRAGMA table_info(ad_reports)').all().some(column => column.nam
   db.exec("ALTER TABLE ad_reports ADD COLUMN reply TEXT NOT NULL DEFAULT ''");
 }
 
+const userColumns = new Set(db.prepare('PRAGMA table_info(users)').all().map(column => column.name));
+if (!userColumns.has('is_premium')) {
+  db.exec('ALTER TABLE users ADD COLUMN is_premium INTEGER NOT NULL DEFAULT 0');
+}
+if (!userColumns.has('premium_until')) {
+  db.exec('ALTER TABLE users ADD COLUMN premium_until TEXT');
+}
+
+const premiumStatusByUser = db.prepare(`
+  SELECT is_premium = 1 AND COALESCE(julianday(premium_until) > julianday('now'), 0) AS active,
+         premium_until
+  FROM users
+  WHERE id = ?
+`);
+
+function getPremiumStatus(userId) {
+  const row = premiumStatusByUser.get(userId);
+  return { is_premium: Boolean(row?.active), premium_until: row?.premium_until ?? null };
+}
+
 function seed() {
   const userCount = db.prepare('SELECT COUNT(*) AS c FROM users').get().c;
   if (userCount === 0) {
@@ -219,3 +239,4 @@ function seed() {
 seed();
 
 module.exports = db;
+module.exports.getPremiumStatus = getPremiumStatus;

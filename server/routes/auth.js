@@ -51,7 +51,9 @@ router.post('/logout', (req, res) => {
 });
 
 router.get('/me', (req, res) => {
-  res.json({ user: req.user || null });
+  res.set('Cache-Control', 'no-store');
+  const user = req.user ? { ...req.user, ...db.getPremiumStatus(req.user.id) } : null;
+  res.json({ user });
 });
 
 module.exports = router;

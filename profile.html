@@ -45,7 +45,7 @@
                 <button class="list-group-item list-group-item-action" data-tab="favorites">❤️ Избранное</button>
                 <button class="list-group-item list-group-item-action" data-tab="myReports"><i class="bi bi-flag"></i> Мои жалобы</button>
                 <button class="list-group-item list-group-item-action" data-tab="settings">⚙️ Настройки профиля</button>
-                <button class="list-group-item list-group-item-action" data-tab="premium"><i class="bi bi-star-fill"></i> Купить премиум</button>
+                <button class="list-group-item list-group-item-action" data-tab="premium"><i class="bi bi-star-fill"></i> Премиум</button>
             </div>
         </div>
         <div class="col-md-9">
@@ -137,22 +137,10 @@
             </div>
             
             <div id="premiumTab" class="tab-content-card" style="display:none;">
-                <div class="bg-dark p-4 rounded-4 text-center">
-                    <i class="bi bi-star-fill text-warning" style="font-size: 3rem;"></i>
-                    <h3 class="fw-bold mt-2"><i class="bi bi-star-fill"></i> Премиум доступ</h3>
-                    <p class="text-secondary">Выделите свои объявления, поднимитесь в поиске, получите значок «Премиум продавец».</p>
-                    <div class="row mt-3 mb-3">
-                        <div class="col-md-6 offset-md-3">
-                            <div class="bg-dark p-3 rounded-4 border border-warning">
-                                <h4 class="text-warning">49 $</h4>
-                                <p class="small text-secondary">в месяц</p>
-                                <button class="btn btn-warning w-100 fw-bold" onclick="window.location.href='premium.html'">
-                                    <i class="bi bi-gem"></i> Купить премиум
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-secondary small">После покупки премиум-доступ активируется автоматически</p>
+                <div class="bg-dark p-4 rounded-4">
+                    <h3 class="fw-bold"><i class="bi bi-star-fill text-warning"></i> Премиум</h3>
+                    <p id="profilePremiumStatus" class="text-secondary" role="status">Проверяем статус…</p>
+                    <a class="btn btn-outline-purple" href="premium.html">Открыть страницу премиума</a>
                 </div>
             </div>
         </div>
@@ -193,5 +181,6 @@
 <script src="favorites.js"></script>
 <script src="report-options.js"></script>
 <script src="report-profile.js"></script>
+<script src="premium.js"></script>
 </body>
 </html>
