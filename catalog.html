@@ -113,6 +113,9 @@
             .car-card-horizontal .car-img { height: 160px; }
             .car-price-large { font-size: 1.4rem; }
         }
+        #comparisonDialog { width: min(46rem, calc(100% - 2rem)); }
+        #comparisonDialog::backdrop { background: rgba(15, 23, 41, .55); }
+        #comparisonTable th, #comparisonTable td { min-width: 7rem; }
     </style>
 </head>
 <body>
@@ -135,6 +138,25 @@
         <button class="btn btn-outline-purple btn-sm" onclick="resetFiltersAndReload()">Сбросить все фильтры</button>
     </div>
     <div id="resultsCount" class="mb-3 text-secondary"></div>
+    <section class="border rounded p-3 mb-3 d-flex flex-wrap align-items-center gap-2" aria-label="Сравнение автомобилей">
+        <span id="comparisonCount" class="me-auto" aria-live="polite"></span>
+        <button id="comparisonOpen" type="button" class="btn btn-purple btn-sm" disabled>Сравнить</button>
+        <button id="comparisonClear" type="button" class="btn btn-outline-purple btn-sm" disabled>Сбросить выбор</button>
+    </section>
+    <dialog id="comparisonDialog" class="p-3 rounded border" aria-labelledby="comparisonTitle">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+            <h2 id="comparisonTitle" class="h5 m-0">Сравнение автомобилей</h2>
+            <form method="dialog">
+                <button class="btn btn-outline-purple btn-sm">Закрыть</button>
+            </form>
+        </div>
+        <div class="table-responsive" tabindex="0" role="region" aria-label="Характеристики автомобилей">
+            <table id="comparisonTable" class="table table-striped mb-0">
+                <thead><tr><th scope="col">Характеристика</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </dialog>
     <div id="adsContainer"></div>
     <nav id="paginationNav" class="mt-4"></nav>
 </main>
@@ -263,6 +285,10 @@
                                 <button class="btn btn-outline-purple btn-sm" onclick="alert('Связь с продавцом: ${phone}')">
                                     <i class="bi bi-telephone"></i> Позвонить
                                 </button>
+                                <label class="form-check d-flex align-items-center gap-2 mb-0">
+                                    <input type="checkbox" class="form-check-input mt-0" data-compare-car="${car.id}">
+                                    Сравнить
+                                </label>
                                 <a href="ad.html?id=${car.id}" class="btn btn-purple btn-sm">
                                     <i class="bi bi-eye"></i> Подробнее
                                 </a>
@@ -274,6 +300,74 @@
         `;
     }
     
+
+    const comparisonLimit = 3;
+    const selectedCars = new Map();
+    const comparisonDialog = document.getElementById('comparisonDialog');
+    const comparisonCount = document.getElementById('comparisonCount');
+    const comparisonOpen = document.getElementById('comparisonOpen');
+
+    function updateComparison() {
+        comparisonCount.textContent = 'Выбрано ' + selectedCars.size + ' из ' + comparisonLimit;
+        comparisonOpen.disabled = selectedCars.size < 2;
+        document.getElementById('comparisonClear').disabled = selectedCars.size === 0;
+
+        for (const checkbox of document.querySelectorAll('[data-compare-car]')) {
+            checkbox.checked = selectedCars.has(Number(checkbox.dataset.compareCar));
+            checkbox.disabled = !checkbox.checked && selectedCars.size >= comparisonLimit;
+        }
+    }
+
+    document.getElementById('adsContainer').addEventListener('change', event => {
+        const checkbox = event.target.closest('[data-compare-car]');
+        if (!checkbox) return;
+        const carId = Number(checkbox.dataset.compareCar);
+        if (checkbox.checked && selectedCars.size < comparisonLimit) {
+            selectedCars.set(carId, carsDatabase.find(car => car.id === carId));
+        } else if (!checkbox.checked) {
+            selectedCars.delete(carId);
+        }
+        updateComparison();
+    });
+
+    document.getElementById('comparisonClear').addEventListener('click', () => {
+        selectedCars.clear();
+        updateComparison();
+    });
+
+    comparisonOpen.addEventListener('click', () => {
+        const cars = [...selectedCars.values()];
+        const table = document.getElementById('comparisonTable');
+        const header = table.tHead.rows[0];
+        header.replaceChildren(header.cells[0]);
+        for (const car of cars) {
+            const cell = document.createElement('th');
+            cell.scope = 'col';
+            cell.textContent = car.brand + ' ' + car.model;
+            header.appendChild(cell);
+        }
+
+        const body = table.tBodies[0];
+        body.replaceChildren();
+        const fields = [
+            ['Цена', car => '$' + car.price.toLocaleString()],
+            ['Год выпуска', car => car.year],
+            ['Пробег', car => car.mileage + ' км'],
+            ['Двигатель', car => car.engine === 'эл.' ? 'Электромотор' : car.engine + ' л'],
+            ['Кузов', car => car.bodyType],
+            ['Привод', car => car.drive],
+            ['Коробка передач', car => car.transmission]
+        ];
+        for (const [label, value] of fields) {
+            const row = body.insertRow();
+            const title = document.createElement('th');
+            title.scope = 'row';
+            title.textContent = label;
+            row.appendChild(title);
+            for (const car of cars) row.insertCell().textContent = value(car);
+        }
+        comparisonDialog.showModal();
+    });
     let currentPage = 1;
     const perPage = 10;
     
@@ -300,6 +394,7 @@
         pageCars.forEach(car => {
             container.innerHTML += renderCarCard(car);
         });
+        updateComparison();
         renderPagination(totalResults);
     }
     
