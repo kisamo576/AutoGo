@@ -173,6 +173,18 @@ if (!db.prepare('PRAGMA table_info(ad_reports)').all().some(column => column.nam
   db.exec("ALTER TABLE ad_reports ADD COLUMN reply TEXT NOT NULL DEFAULT ''");
 }
 
+const listingColumns = new Set(db.prepare('PRAGMA table_info(listings)').all().map(column => column.name));
+if (!listingColumns.has('review_status')) {
+  db.exec("ALTER TABLE listings ADD COLUMN review_status TEXT NOT NULL DEFAULT 'approved' CHECK (review_status IN ('pending', 'approved', 'rejected'))");
+}
+if (!listingColumns.has('review_note')) {
+  db.exec("ALTER TABLE listings ADD COLUMN review_note TEXT NOT NULL DEFAULT ''");
+}
+if (!listingColumns.has('revision')) {
+  db.exec('ALTER TABLE listings ADD COLUMN revision INTEGER NOT NULL DEFAULT 1');
+}
+db.exec('CREATE INDEX IF NOT EXISTS listings_review_queue ON listings (status, review_status, id)');
+
 const userColumns = new Set(db.prepare('PRAGMA table_info(users)').all().map(column => column.name));
 if (!userColumns.has('is_premium')) {
   db.exec('ALTER TABLE users ADD COLUMN is_premium INTEGER NOT NULL DEFAULT 0');

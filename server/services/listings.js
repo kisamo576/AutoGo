@@ -21,16 +21,19 @@ function toListing(row) {
     description: row.description,
     status: row.status,
     updated_at: row.updated_at,
+    review_status: row.review_status,
+    review_note: row.review_note,
+    revision: row.revision,
     isUserListing: true
   };
 }
 
 const publicRows = db.prepare(`
-  SELECT id, model_id, year, price, mileage, description, status, updated_at
-  FROM listings WHERE status = 'published' ORDER BY id
+  SELECT id, model_id, year, price, mileage, description, status, updated_at, review_status
+  FROM listings WHERE status = 'published' AND review_status = 'approved' ORDER BY id
 `);
 const knownListing = db.prepare(`
-  SELECT status FROM listings WHERE id = ?
+  SELECT status, review_status FROM listings WHERE id = ?
 `);
 
 function getPublishedListings() {
@@ -40,7 +43,7 @@ function getPublishedListings() {
 function listingExists(id, publishedOnly = false) {
   if (models.has(id)) return true;
   const row = knownListing.get(listingId(id));
-  return Boolean(row && (!publishedOnly || row.status === 'published'));
+  return Boolean(row && (!publishedOnly || (row.status === 'published' && row.review_status === 'approved')));
 }
 
 module.exports = { models, listingId, toListing, getPublishedListings, listingExists };

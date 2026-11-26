@@ -411,6 +411,7 @@ test('владелец публикует, редактирует и снима�
   assert.equal(created.status, 201);
   const { listing } = await created.json();
   assert.equal(listing.status, 'published');
+  assert.equal(listing.review_status, 'pending');
   assert.equal(listing.description, 'Объявление для теста');
   const url = '/api/listings/' + listing.id;
   assert.equal((await request(url, owner)).status, 200);
@@ -425,6 +426,36 @@ test('владелец публикует, редактирует и снима�
   assert.equal(items[0].price, 23000);
   assert.equal(items[0].id, listing.id);
   const catalog = () => fetch(baseUrl + '/cars.js').then(response => response.text());
+  assert.doesNotMatch(await catalog(), /Новая цена <23001>/);
+  const queuePath = '/api/listing-moderation/queue';
+  const moderationPath = '/api/listing-moderation/' + listing.id;
+  assert.equal((await request(queuePath, null)).status, 401);
+  assert.equal((await request(queuePath, owner)).status, 403);
+  const queue = (await (await request(queuePath, other)).json()).listings;
+  const pending = queue.find(item => item.id === listing.id);
+  assert.equal(pending.price, 23000);
+  assert.ok(pending.seller_name);
+  const approve = { decision: 'approved', revision: pending.revision };
+  assert.equal((await request(moderationPath, owner, 'PATCH', approve)).status, 403);
+  assert.equal((await request(moderationPath, other, 'PATCH', { ...approve, revision: listing.revision })).status, 409);
+  assert.equal((await request(moderationPath, other, 'PATCH', { ...approve, decision: 'rejected' })).status, 400);
+  const rejected = await request(moderationPath, other, 'PATCH', {
+    ...approve, decision: 'rejected', reason: '  Уточните цену  '
+  });
+  assert.equal(rejected.status, 200);
+  const rejectedListing = (await (await request(url, owner)).json()).listing;
+  assert.equal(rejectedListing.review_status, 'rejected');
+  assert.equal(rejectedListing.review_note, 'Уточните цену');
+  assert.doesNotMatch(await catalog(), /Новая цена <23001>/);
+
+  const retry = await request(url, owner, 'PUT', { ...body, price: 23001, description: 'Новая цена <23001>' });
+  assert.equal(retry.status, 200);
+  const retryListing = (await retry.json()).listing;
+  assert.equal(retryListing.review_status, 'pending');
+  assert.equal(retryListing.review_note, '');
+  const decision = { decision: 'approved', revision: retryListing.revision };
+  assert.equal((await request(moderationPath, other, 'PATCH', decision)).status, 200);
+  assert.equal((await request(moderationPath, other, 'PATCH', decision)).status, 409);
   assert.match(await catalog(), /Новая цена <23001>/);
   assert.equal((await request('/api/reports', other, 'POST', { ad_id: listing.id, reason: 'wrong_price' })).status, 201);
   assert.equal((await request(url + '/status', owner, 'PATCH', { status: 'archived' })).status, 200);

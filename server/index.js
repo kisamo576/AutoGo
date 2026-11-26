@@ -13,6 +13,7 @@ const forumRoutes = require('./routes/forum');
 const docsRoutes = require('./routes/docs');
 const agentRoutes = require('./routes/agent');
 const premiumRoutes = require('./routes/premium');
+const listingModerationRoutes = require('./routes/listing-moderation');
 const listingsRoutes = require('./routes/listings');
 const { getPublishedListings } = require('./services/listings');
 const reportsRoutes = require('./routes/reports');
@@ -34,6 +35,7 @@ app.use('/api/docs', docsRoutes);
 app.use('/api/agent', agentRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/listings', listingsRoutes);
+app.use('/api/listing-moderation', listingModerationRoutes);
 app.use('/api/premium', premiumRoutes);
 
 const BLOCKED_PREFIXES = ['/server', '/data', '/node_modules', '/tests', '/scripts', '/team-instructions', '/.env'];

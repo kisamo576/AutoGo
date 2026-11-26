@@ -55,6 +55,7 @@
         <h2 id="listingFormTitle" class="fw-bold mb-3">Подать объявление</h2>
         <form id="addAdForm">
             <fieldset id="listingFields" disabled>
+                <p class="small text-secondary">Объявление появится в каталоге после одобрения. Изменения тоже проверяет модератор.</p>
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label for="listingBrand" class="form-label">Марка</label>
@@ -82,7 +83,7 @@
                 <p id="listingModelDetails" class="small text-secondary"></p>
                 <label for="listingDescription" class="form-label">Описание автомобиля</label>
                 <textarea id="listingDescription" name="description" class="form-control mb-3" rows="5" maxlength="2000" required></textarea>
-                <button id="saveListing" type="submit" class="btn btn-purple">Опубликовать объявление</button>
+                <button id="saveListing" type="submit" class="btn btn-purple">Отправить на модерацию</button>
             </fieldset>
         </form>
         <p id="listingFormMessage" class="mt-3 small" role="status">Проверяем авторизацию…</p>

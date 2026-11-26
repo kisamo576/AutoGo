@@ -3,6 +3,7 @@
     const message = document.getElementById('myListingMessage');
     const money = new Intl.NumberFormat('ru-RU');
     let loading = false;
+    const reviewLabels = { pending: 'На модерации', rejected: 'Отклонено', approved: 'Опубликовано' };
 
     function link(label, url, className) {
         const anchor = document.createElement('a');
@@ -22,10 +23,10 @@
         details.className = 'small text-secondary';
         const published = listing.status === 'published';
         details.textContent = [listing.year + ' г.', '$' + money.format(listing.price),
-            published ? 'Опубликовано' : 'Снято с публикации'].join(' · ');
+            published ? reviewLabels[listing.review_status] : 'Снято с публикации'].join(' · ');
         const controls = document.createElement('div');
         controls.className = 'd-flex flex-wrap gap-2';
-        if (published) controls.append(link('Открыть', 'ad.html?id=' + listing.id, 'btn btn-sm btn-purple'));
+        if (published && listing.review_status === 'approved') controls.append(link('Открыть', 'ad.html?id=' + listing.id, 'btn btn-sm btn-purple'));
         controls.append(link('Редактировать', 'add_ad.html?id=' + listing.id, 'btn btn-sm btn-outline-purple'));
 
         const visibility = document.createElement('button');
@@ -47,7 +48,7 @@
                     return;
                 }
                 card.replaceWith(renderListing(result.listing));
-                message.textContent = published ? 'Объявление снято с публикации.' : 'Объявление опубликовано.';
+                message.textContent = published ? 'Объявление снято с публикации.' : reviewLabels[result.listing.review_status] + '.';
             } catch {
                 message.textContent = 'Сервер недоступен. Попробуйте ещё раз.';
             } finally {
@@ -55,7 +56,14 @@
             }
         });
         controls.append(visibility);
-        card.append(title, details, controls);
+        card.append(title, details);
+        if (listing.review_status === 'rejected' && listing.review_note) {
+            const reason = document.createElement('p');
+            reason.className = 'small text-break';
+            reason.textContent = 'Причина отклонения — ' + listing.review_note;
+            card.append(reason);
+        }
+        card.append(controls);
         return card;
     }
 

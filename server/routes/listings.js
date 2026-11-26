@@ -8,18 +8,19 @@ const router = express.Router();
 const ownerRows = db.prepare('SELECT * FROM listings WHERE user_id = ? ORDER BY id DESC');
 const ownerRow = db.prepare('SELECT * FROM listings WHERE id = ? AND user_id = ?');
 const insert = db.prepare(`
-  INSERT INTO listings (user_id, model_id, year, price, mileage, description)
-  VALUES (?, ?, ?, ?, ?, ?)
+  INSERT INTO listings (user_id, model_id, year, price, mileage, description, review_status)
+  VALUES (?, ?, ?, ?, ?, ?, 'pending')
   RETURNING *
 `);
 const update = db.prepare(`
   UPDATE listings
-  SET model_id = ?, year = ?, price = ?, mileage = ?, description = ?, updated_at = datetime('now')
+  SET model_id = ?, year = ?, price = ?, mileage = ?, description = ?, updated_at = datetime('now'),
+      review_status = 'pending', review_note = '', revision = revision + 1
   WHERE id = ? AND user_id = ?
   RETURNING *
 `);
 const changeStatus = db.prepare(`
-  UPDATE listings SET status = ?, updated_at = datetime('now')
+  UPDATE listings SET status = ?, updated_at = datetime('now'), revision = revision + 1
   WHERE id = ? AND user_id = ?
   RETURNING *
 `);
