@@ -9,10 +9,14 @@ function listingId(value) {
   return Number.isSafeInteger(id) && id > 0 ? id : null;
 }
 
+function listingPublicId(id) {
+  return id + publicIdOffset;
+}
+
 function toListing(row) {
   const { brand, model, engine, powertrain, bodyType, drive, transmission } = models.get(row.model_id);
   return {
-    id: row.id + publicIdOffset,
+    id: listingPublicId(row.id),
     model_id: row.model_id,
     brand, model, engine, powertrain, bodyType, drive, transmission,
     year: row.year,
@@ -46,4 +50,4 @@ function listingExists(id, publishedOnly = false) {
   return Boolean(row && (!publishedOnly || (row.status === 'published' && row.review_status === 'approved')));
 }
 
-module.exports = { models, listingId, toListing, getPublishedListings, listingExists };
+module.exports = { models, listingId, listingPublicId, toListing, getPublishedListings, listingExists };

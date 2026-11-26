@@ -275,6 +275,7 @@
                                 </div>
                             </div>` : ''}
                             <div class="mt-3">
+                                ${car.isUserListing ? `<a href="profile.html?listing=${car.id}#messages" class="btn btn-purple w-100 mb-3"><i class="bi bi-chat-dots"></i> Написать продавцу</a>` : ''}
                                 <div class="d-flex gap-2 flex-wrap">
                                     <a href="catalog.html" class="btn btn-outline-purple btn-sm flex-grow-1">← Назад</a>
                                     <button type="button" class="btn btn-outline-danger btn-sm flex-grow-1" data-favorite-car="${car.id}" aria-pressed="false">♡ В избранное</button>

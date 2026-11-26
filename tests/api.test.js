@@ -464,3 +464,64 @@ test('владелец публикует, редактирует и снима�
   assert.equal((await request(url + '/status', owner, 'PATCH', { status: 'published' })).status, 200);
   assert.match(await catalog(), /Новая цена <23001>/);
 });
+
+test('переписка доступна только покупателю и владельцу объявления', async () => {
+  const signedIn = async (email, password) => {
+    const response = await fetch(`${baseUrl}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    assert.equal(response.status, 200);
+    return extractCookie(response);
+  };
+  const buyer = await signedIn('user@autogo.local', 'user12345');
+  const moderator = await signedIn('admin@autogo.local', 'admin123');
+  const registered = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: `seller_${Date.now()}@example.com`, password: 'password123', name: 'Продавец' })
+  });
+  assert.equal(registered.status, 201);
+  const seller = extractCookie(registered);
+  const call = (path, cookie, body, method = body ? 'POST' : 'GET') => fetch(baseUrl + path, {
+    method,
+    headers: { 'Content-Type': 'application/json', ...(cookie ? { Cookie: cookie } : {}) },
+    body: body === undefined ? undefined : JSON.stringify(body)
+  });
+  const created = await call('/api/listings', seller, {
+    model_id: 1, year: 2022, price: 22000, mileage: 40000, description: 'Проверка переписки'
+  });
+  assert.equal(created.status, 201);
+  const { listing } = await created.json();
+  const inbox = '/api/messages/conversations';
+  const question = { listing_id: listing.id, body: '  Машина ещё продаётся?  ' };
+  assert.equal((await call(inbox, null)).status, 401);
+  assert.equal((await call(inbox, buyer, question)).status, 409);
+  const approval = await call('/api/listing-moderation/' + listing.id, moderator, {
+    decision: 'approved', revision: listing.revision
+  }, 'PATCH');
+  assert.equal(approval.status, 200);
+
+  assert.equal((await call(inbox, seller, question)).status, 409);
+  assert.equal((await call(inbox, buyer, { ...question, body: ' ' })).status, 400);
+  const opened = await call(inbox, buyer, question);
+  assert.equal(opened.status, 201);
+  const first = await opened.json();
+  assert.equal(first.message.body, 'Машина ещё продаётся?');
+  const repeated = await (await call(inbox, buyer, { ...question, body: 'Когда можно посмотреть?' })).json();
+  assert.equal(repeated.conversation_id, first.conversation_id);
+  const sellerInbox = (await (await call(inbox, seller)).json()).conversations;
+  assert.equal(sellerInbox[0].id, first.conversation_id);
+  assert.equal(sellerInbox[0].listing_id, listing.id);
+  assert.equal((await (await call(inbox, moderator)).json()).conversations.length, 0);
+
+  const messages = inbox + '/' + first.conversation_id + '/messages';
+  assert.equal((await call(messages, moderator)).status, 404);
+  assert.equal((await call(messages, moderator, { body: 'Посторонний ответ' })).status, 404);
+  assert.equal((await call(messages, seller, { body: 'Да, в субботу.' })).status, 201);
+  const buyerHistory = (await (await call(messages, buyer)).json()).messages;
+  assert.deepEqual(buyerHistory.map(item => item.body), ['Машина ещё продаётся?', 'Когда можно посмотреть?', 'Да, в субботу.']);
+  const earlier = await (await call(messages + '?before=' + buyerHistory[1].id, seller)).json();
+  assert.deepEqual(earlier.messages.map(item => item.body), ['Машина ещё продаётся?']);
+});

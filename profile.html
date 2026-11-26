@@ -43,6 +43,7 @@
                 <button class="list-group-item list-group-item-action active" data-tab="myAds"><i class="bi bi-card-list"></i> Мои объявления</button>
                 <a href="garage.html" class="list-group-item list-group-item-action"><i class="bi bi-car-front"></i> Мой гараж</a>
                 <button class="list-group-item list-group-item-action" data-tab="favorites">❤️ Избранное</button>
+                <button class="list-group-item list-group-item-action" data-tab="messages"><i class="bi bi-chat-dots"></i> Сообщения</button>
                 <button class="list-group-item list-group-item-action" data-tab="myReports"><i class="bi bi-flag"></i> Мои жалобы</button>
                 <button class="list-group-item list-group-item-action" data-tab="settings">⚙️ Настройки профиля</button>
                 <button class="list-group-item list-group-item-action" data-tab="premium"><i class="bi bi-star-fill"></i> Премиум</button>
@@ -100,6 +101,31 @@
             </div>
 
 
+            <section id="messagesTab" class="tab-content-card" style="display:none;" aria-labelledby="messagesTitle">
+                <div class="bg-dark p-4 rounded-4">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                        <h3 id="messagesTitle" class="h5 mb-0">Сообщения</h3>
+                        <button id="refreshMessages" type="button" class="btn btn-sm btn-outline-purple">Обновить</button>
+                    </div>
+                    <p id="messagesStatus" class="small text-secondary" role="status"></p>
+                    <div class="row g-3">
+                        <div class="col-lg-4">
+                            <div id="conversationList" class="d-grid gap-2" aria-label="Диалоги"></div>
+                        </div>
+                        <div class="col-lg-8">
+                            <h4 id="conversationTitle" class="h6"></h4>
+                            <button id="olderMessages" type="button" class="btn btn-sm btn-outline-purple mb-2" hidden>Показать более ранние</button>
+                            <ol id="messageHistory" class="list-unstyled d-grid gap-2" aria-label="История сообщений"></ol>
+                            <form id="messageCompose" hidden>
+                                <label for="listingMessageBody" class="form-label">Сообщение</label>
+                                <textarea id="listingMessageBody" name="body" class="form-control mb-2" maxlength="1000" rows="3" required></textarea>
+                                <button class="btn btn-sm btn-purple" type="submit">Отправить</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section id="myReportsTab" class="tab-content-card" style="display:none;" aria-labelledby="myReportsTitle">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                     <h3 id="myReportsTitle" class="h5 fw-bold mb-0">Мои жалобы</h3>
@@ -156,6 +182,7 @@
         myAds: document.getElementById('myAdsTab'),
         favorites: document.getElementById('favoritesTab'),
         myReports: document.getElementById('myReportsTab'),
+        messages: document.getElementById('messagesTab'),
         settings: document.getElementById('settingsTab'),
         premium: document.getElementById('premiumTab')
     };
@@ -168,6 +195,7 @@
             });
             if (tab === 'myAds' && tabs.myAds) tabs.myAds.style.display = 'block';
             if (tab === 'favorites' && tabs.favorites) tabs.favorites.style.display = 'block';
+            if (tab === 'messages' && tabs.messages) tabs.messages.style.display = 'block';
             if (tab === 'myReports' && tabs.myReports) tabs.myReports.style.display = 'block';
             if (tab === 'settings' && tabs.settings) tabs.settings.style.display = 'block';
             if (tab === 'premium' && tabs.premium) tabs.premium.style.display = 'block';
@@ -184,5 +212,6 @@
 <script src="report-profile.js"></script>
 <script src="premium.js"></script>
 <script src="my-listings.js"></script>
+<script src="listing-messages.js"></script>
 </body>
 </html>

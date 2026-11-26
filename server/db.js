@@ -154,6 +154,28 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS listings_by_owner ON listings (user_id, id);
   CREATE INDEX IF NOT EXISTS listings_by_status ON listings (status, id);
 
+  CREATE TABLE IF NOT EXISTS listing_conversations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    listing_id INTEGER NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+    buyer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    seller_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (listing_id, buyer_id),
+    CHECK (buyer_id <> seller_id)
+  );
+
+  CREATE INDEX IF NOT EXISTS listing_conversations_buyer ON listing_conversations (buyer_id);
+  CREATE INDEX IF NOT EXISTS listing_conversations_seller ON listing_conversations (seller_id);
+
+  CREATE TABLE IF NOT EXISTS listing_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    conversation_id INTEGER NOT NULL REFERENCES listing_conversations(id) ON DELETE CASCADE,
+    author_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    body TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE INDEX IF NOT EXISTS listing_messages_thread ON listing_messages (conversation_id, id);
+
   CREATE TABLE IF NOT EXISTS hidden_listings (
     ad_id INTEGER PRIMARY KEY,
     hidden_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
