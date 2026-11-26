@@ -121,6 +121,10 @@
 </header>
 
 <main class="container my-4">
+    <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
+        <a href="profile.html#favorites" class="btn btn-outline-purple btn-sm">Избранное</a>
+        <span id="favoritesStatus" role="status" class="text-secondary small"></span>
+    </div>
     <div id="carContent">
         <div class="text-center py-5">
             <div class="spinner-border text-purple" role="status"></div>
@@ -244,9 +248,7 @@
                             <div class="mt-3">
                                 <div class="d-flex gap-2 flex-wrap">
                                     <a href="catalog.html" class="btn btn-outline-purple btn-sm flex-grow-1">← Назад</a>
-                                    <button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="alert('Добавлено в избранное')">
-                                        <i class="bi bi-heart"></i> В избранное
-                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm flex-grow-1" data-favorite-car="${car.id}" aria-pressed="false">♡ В избранное</button>
                                     <button class="btn btn-report btn-sm flex-grow-1" onclick="alert('Жалоба отправлена модератору. Мы рассмотрим её в течение 24 часов.')">
                                         <i class="bi bi-exclamation-triangle"></i> Пожаловаться
                                     </button>
@@ -290,5 +292,6 @@
         bootstrap.Modal.getInstance(document.getElementById('messageModal')).hide();
     });
 </script>
+<script src="favorites.js"></script>
 </body>
 </html>

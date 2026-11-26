@@ -59,19 +59,45 @@
             </div>
             
             <div id="favoritesTab" class="tab-content-card" style="display:none;">
-                <div class="bg-dark p-4 rounded-4">
-                    <div class="text-center py-4">
-                        <i class="bi bi-heart text-secondary" style="font-size: 3rem;"></i>
-                        <h3 class="fw-bold mt-3">Избранное</h3>
-                        <p class="text-secondary">Здесь будут отображаться автомобили, которые вы добавили в избранное.</p>
-                        <p class="text-secondary small">Нажмите на сердечко на карточке автомобиля, чтобы добавить его в избранное.</p>
-                        <button class="btn btn-outline-purple mt-2" onclick="alert('Функция в разработке. В ближайшее время здесь появятся сохранённые автомобили.')">
-                            <i class="bi bi-arrow-repeat"></i> Обновить
-                        </button>
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                    <div>
+                        <h3 class="fw-bold mb-1">Избранное</h3>
+                        <span id="favoritesCount" class="text-secondary"></span>
                     </div>
+                    <a id="favoritesCatalogLink" class="btn btn-outline-purple btn-sm" href="catalog.html">В каталог</a>
                 </div>
+                <p class="text-secondary small">Машины и заметки сохраняются в этом браузере.</p>
+                <label class="form-label" for="favoritesSort">Сортировка</label>
+                <select id="favoritesSort" class="form-select mb-3">
+                    <option value="recent">Недавно добавленные</option>
+                    <option value="price">Сначала дешевле</option>
+                    <option value="year">Сначала новее</option>
+                </select>
+                <p id="favoritesStatus" role="status" class="small text-secondary mb-2"></p>
+                <p id="favoritesEmpty" class="text-secondary" hidden>Сохрани машину в каталоге или в карточке объявления, чтобы она появилась здесь.</p>
+                <div id="favoritesList" class="d-grid gap-3"></div>
+                <template id="favoriteTemplate">
+                    <article class="border rounded p-3">
+                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                            <img class="rounded object-fit-cover" width="112" height="74" alt="">
+                            <div class="me-auto">
+                                <a data-car-link class="fw-bold"></a>
+                                <div data-car-specs class="text-secondary small"></div>
+                            </div>
+                            <button type="button" data-remove-car class="btn btn-outline-danger btn-sm">Удалить</button>
+                        </div>
+                        <form>
+                            <label class="form-label d-block">
+                                Заметка
+                                <textarea name="note" maxlength="200" rows="2" class="form-control mt-1"></textarea>
+                            </label>
+                            <button type="submit" class="btn btn-outline-purple btn-sm">Сохранить заметку</button>
+                        </form>
+                    </article>
+                </template>
             </div>
-            
+
+
             <div id="settingsTab" class="tab-content-card" style="display:none;">
                 <div class="bg-dark p-4 rounded-4">
                     <h3 class="fw-bold mb-3">Настройки профиля</h3>
@@ -148,6 +174,9 @@
             btn.classList.add('active');
         });
     });
+    if (window.location.hash === '#favorites') document.querySelector('[data-tab="favorites"]').click();
 </script>
+<script src="cars.js"></script>
+<script src="favorites.js"></script>
 </body>
 </html>

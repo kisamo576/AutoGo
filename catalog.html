@@ -133,6 +133,10 @@
 <main class="container my-4">
     <h2 class="mb-3">Каталог автомобилей</h2>
     
+    <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
+        <a href="profile.html#favorites" class="btn btn-outline-purple btn-sm">Избранное</a>
+        <span id="favoritesStatus" role="status" class="text-secondary small"></span>
+    </div>
     <div id="activeFiltersContainer" class="active-filters"></div>
     <div id="resetFilterBtn" style="display: none;" class="mb-3">
         <button class="btn btn-outline-purple btn-sm" onclick="resetFiltersAndReload()">Сбросить все фильтры</button>
@@ -281,7 +285,7 @@
                                 <i class="bi bi-telephone-fill"></i>
                                 <span>${phone}</span>
                             </div>
-                            <div class="d-flex gap-2">
+                            <div class="d-flex flex-wrap gap-2">
                                 <button class="btn btn-outline-purple btn-sm" onclick="alert('Связь с продавцом: ${phone}')">
                                     <i class="bi bi-telephone"></i> Позвонить
                                 </button>
@@ -289,6 +293,7 @@
                                     <input type="checkbox" class="form-check-input mt-0" data-compare-car="${car.id}">
                                     Сравнить
                                 </label>
+                                <button type="button" class="btn btn-outline-danger btn-sm" data-favorite-car="${car.id}" aria-pressed="false">♡ В избранное</button>
                                 <a href="ad.html?id=${car.id}" class="btn btn-purple btn-sm">
                                     <i class="bi bi-eye"></i> Подробнее
                                 </a>
@@ -395,6 +400,7 @@
             container.innerHTML += renderCarCard(car);
         });
         updateComparison();
+        window.AutoGoFavorites?.updateButtons();
         renderPagination(totalResults);
     }
     
@@ -497,5 +503,6 @@
     displayActiveFilters();
     renderAds();
 </script>
+<script src="favorites.js"></script>
 </body>
 </html>
